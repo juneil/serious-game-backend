@@ -83,7 +83,7 @@ Resources:
         Table: !GetAtt DynamoApp.Outputs.TableName
         ApiDomainName: !Ref ApiDomain
         BaseDomain: !Ref DomainName
-        CertificateArn: !GetAtt Global.Outputs.GlobalCertificate
+        CertificateArn: !GetAtt Global.Outputs.Certificate
 
   DynamoApp:
     Type: AWS::Serverless::Application
@@ -104,6 +104,9 @@ Outputs:
   ZoneNameServers:
     Description: Nameservers
     Value: !GetAtt Global.Outputs.ZoneNameServers
-  GlobalCertificate:
+  Certificate:
     Description: Regional wildcard certificate
-    Value: !GetAtt Global.Outputs.GlobalCertificate
+    Value: !GetAtt Global.Outputs.Certificate
+  ZoneId:
+    Description: Route 53 Zone ID
+    Value: !GetAtt Global.Outputs.ZoneId

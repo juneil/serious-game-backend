@@ -18,7 +18,7 @@ Resources:
     Properties:
       Name: !Ref SubDomainName
 
-  GlobalCertificate:
+  RegionalCertificate:
     Type: AWS::CertificateManager::Certificate
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
@@ -42,6 +42,10 @@ Outputs:
     Description: Nameservers
     Value: !Join [",", !GetAtt SubDomainZone.NameServers]
 
-  GlobalCertificate:
+  Certificate:
     Description: Regional wildcard certificate
-    Value: !Ref GlobalCertificate
+    Value: !Ref RegionalCertificate
+
+  ZoneId:
+    Description: Route 53 Zone ID
+    Value: !Ref SubDomainZone
