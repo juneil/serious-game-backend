@@ -33,15 +33,15 @@ Parameters:
   Table:
     Description: DynamoDB Table
     Type: String
-  # DomainName:
-  #   Description: The domain name for the ApiGateway
-  #   Type: String
-  # BaseDomain:
-  #   Description: The base domain name for adding the DNS records
-  #   Type: String
-  # CertificateArn:
-  #   Description: The certificate ARN for the region
-  #   Type: String
+  ApiDomainName:
+    Description: The domain name for the ApiGateway
+    Type: String
+  BaseDomain:
+    Description: The base domain name for adding the DNS records
+    Type: String
+  CertificateArn:
+    Description: The certificate ARN for the region
+    Type: String
   LoggerLevel:
     Description: "the logger lever used to filter output, can be on of error,warning,info,trace"
     Type: String
@@ -127,39 +127,39 @@ Resources:
       #   DestinationArn: !GetAtt ApiAccessLogGroup.Arn
       #   Format: '$context.identity.sourceIp $context.authorizer.claims.sub [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.requestId $context.awsEndpointRequestId $context.xrayTraceId $context.responseLatency $context.integrationLatency "$context.error.message"'
 
-  # RDomainName:
-  #   Type: AWS::ApiGateway::DomainName
-  #   Properties:
-  #     DomainName: !Ref DomainName
-  #     RegionalCertificateArn: !Ref CertificateArn
-  #     SecurityPolicy: TLS_1_2
-  #     EndpointConfiguration:
-  #       Types:
-  #         - REGIONAL
+  RDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Ref ApiDomainName
+      RegionalCertificateArn: !Ref CertificateArn
+      SecurityPolicy: TLS_1_2
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
 
-  # BasePathMapping:
-  #   Type: AWS::ApiGateway::BasePathMapping
-  #   Properties:
-  #     BasePath: !Ref ApiStageName
-  #     DomainName: !Ref DomainName
-  #     RestApiId: !Ref Api
-  #     Stage: !Ref ApiStageName
-  #   # This dependency is a workaround for a bug in SAM / CF
-  #   # See https://github.com/aws/serverless-application-model/issues/192#issuecomment-406834837
-  #   DependsOn:
-  #     - ApiStage
-  #     - RDomainName
+  BasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties:
+      BasePath: !Ref ApiStageName
+      DomainName: !Ref ApiDomainName
+      RestApiId: !Ref Api
+      Stage: !Ref ApiStageName
+    # This dependency is a workaround for a bug in SAM / CF
+    # See https://github.com/aws/serverless-application-model/issues/192#issuecomment-406834837
+    DependsOn:
+      - ApiStage
+      - RDomainName
 
-  # DNSRecord:
-  #   Type: AWS::Route53::RecordSet
-  #   Properties:
-  #     HostedZoneName: !Sub "${BaseDomain}."
-  #     AliasTarget:
-  #       DNSName: !GetAtt RDomainName.RegionalDomainName
-  #       EvaluateTargetHealth: false
-  #       HostedZoneId: !GetAtt RDomainName.RegionalHostedZoneId
-  #     Name: !Ref DomainName
-  #     Type: A
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub "${BaseDomain}."
+      AliasTarget:
+        DNSName: !GetAtt RDomainName.RegionalDomainName
+        EvaluateTargetHealth: false
+        HostedZoneId: !GetAtt RDomainName.RegionalHostedZoneId
+      Name: !Ref ApiDomainName
+      Type: A
 
   # ApiAccessLogGroup:
   #   Type: AWS::Logs::LogGroup

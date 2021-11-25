@@ -30,17 +30,14 @@ Parameters:
     Description: "the event bus used to put message and read messages. used to test the domain without interferences with others"
     Type: String
     Default: default
-  SubDomainName:
+  DomainName:
     Description: |
-      Sub domain name in the form
+      Domain name in the form
     Type: String
-  DnsZoneId:
+  ApiDomain:
     Description: |
-      DNS Zone ID for Certificate validation
-      Only required for when deploying to us-east-1
+      Domain name for api
     Type: String
-    Default: "DUMMY"
-    AllowedPattern: "[A-Z0-9]+"
 
 Globals:
   Function:
@@ -69,8 +66,7 @@ Resources:
     Properties:
       Location: ./global.yml
       Parameters:
-        SubDomainName: !Ref SubDomainName
-        DnsZoneId: !Ref DnsZoneId
+        SubDomainName: !Ref DomainName
 
   Api:
     Type: AWS::Serverless::Application
@@ -85,6 +81,9 @@ Resources:
         LoggerLevel: !Ref LoggerLevel
         EventBusName: !Ref EventBusName
         Table: !GetAtt DynamoApp.Outputs.TableName
+        ApiDomainName: !Ref ApiDomain
+        BaseDomain: !Ref DomainName
+        CertificateArn: !GetAtt Global.Outputs.GlobalCertificate
 
   DynamoApp:
     Type: AWS::Serverless::Application

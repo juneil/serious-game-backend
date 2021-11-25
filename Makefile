@@ -19,26 +19,14 @@ gitRepoName?=$(shell git remote get-url origin)
 xRayEnabledEnvironments=staging preprod prod
 
 # API base domain
+baseDomain?=skillins.io
 apiBaseDomain?=api.$(baseDomain)
 
 stackSuffix?=$(env)
 stackName?=${pkg-name}-$(stackSuffix)
 
-cfRole=arn:aws:iam::$(accountId):role/cloudformation-role
-
 apiStageName?=v1
-domainName?=valeas.$(apiBaseDomain)
-apiName?=Valeas Backend
-
-ifeq ($(env), test)
-ifneq ($(prId), )
-stackSuffix=$(env)-$(prId)
-stackName=${pkg-name}-$(stackSuffix)
-domainName=valeas-$(prId).$(apiBaseDomain)
-apiName=Valeas Backend (PR$(prId))
-endif
-endif
-
+apiName?=Skillins Backend
 EventBusName?=default
 
 # Enable X-Ray based on the environment
@@ -62,7 +50,7 @@ stackNames=
 # Generate targets files names
 stackOutputs:=$(patsubst %, %.outputs, $(stackNames))
 
-templateBucket=guyfumcf
+templateBucket=skillins-init
 
 .PHONY: all build package deploy clean test-e2e clean-e2e
 
@@ -151,11 +139,13 @@ deploy: template-output.yml
 			ParameterKey=ServiceName,ParameterValue=$(pkg-name) \
 			ParameterKey=LoggerLevel,ParameterValue=$(LoggerLevel) \
 			ParameterKey=QueueReceiveCount,ParameterValue=$(QueueReceiveCount) \
-			ParameterKey=EventBusName,ParameterValue=$(EventBusName)"
+			ParameterKey=EventBusName,ParameterValue=$(EventBusName)" \
+			ParameterKey=ApiDomain,ParameterValue=$(apiBaseDomain)" \
+			ParameterKey=DomainName,ParameterValue=$(baseDomain)"
 
 swagger:
 	@npm run build:swagger
-	@aws --region $(region) s3 cp ./dist/swagger.json s3://guyfumcf/swagger.json
+	@aws --region $(region) s3 cp ./dist/swagger.json s3://$(templateBucket)/swagger.json
 
 
 clean-stack:
