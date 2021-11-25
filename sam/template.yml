@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  ApiStageName:
+    Description: Api Stage Name
+    Type: String
+  ApiName:
+    Description: Api Name
+    Type: String
+  EnableApiTracing:
+    Description: Enable X-Ray tracing in API Gateway
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+  EnableLambdaTracing:
+    Description: Enable X-Ray tracing in Lambdas
+    Type: String
+    Default: Active
+    AllowedValues:
+      - Active
+      - PassThrough
+  LoggerLevel:
+    Description: "the logger lever used to filter output, can be on of error,warning,info,trace"
+    Type: String
+    Default: info
+  EventBusName:
+    Description: "the event bus used to put message and read messages. used to test the domain without interferences with others"
+    Type: String
+    Default: default
+  SubDomainName:
+    Description: |
+      Sub domain name in the form
+    Type: String
+  DnsZoneId:
+    Description: |
+      DNS Zone ID for Certificate validation
+      Only required for when deploying to us-east-1
+    Type: String
+    Default: "DUMMY"
+    AllowedPattern: "[A-Z0-9]+"
+
+Globals:
+  Function:
+    Runtime: nodejs12.x
+    Timeout: 180
+    Tracing: Active
+    Environment:
+      Variables:
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+        LOGGER_LEVEL: !Ref LoggerLevel
+        NODE_OPTIONS: "--enable-source-maps"
+        EVENT_BUS_NAME: !Ref EventBusName
+
+Resources:
+  NodeModulesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "${AWS::StackName}-NodeModulesLayer"
+      Description: node modules
+      ContentUri: ../dist/layer
+      CompatibleRuntimes:
+        - nodejs12.x
+
+  Global:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./global.yml
+      Parameters:
+        SubDomainName: !Ref SubDomainName
+        DnsZoneId: !Ref DnsZoneId
+
+  Api:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./api.yml
+      Parameters:
+        Layer: !Ref NodeModulesLayer
+        ApiName: !Ref ApiName
+        ApiStageName: !Ref ApiStageName
+        EnableApiTracing: !Ref EnableApiTracing
+        EnableLambdaTracing: !Ref EnableLambdaTracing
+        LoggerLevel: !Ref LoggerLevel
+        EventBusName: !Ref EventBusName
+        Table: !GetAtt DynamoApp.Outputs.TableName
+
+  DynamoApp:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./dynamodb.yml
+      TimeoutInMinutes: 60
+
+Outputs:
+  ApiId:
+    Description: API ID
+    Value: !GetAtt Api.Outputs.ApiId
+  ApiUrl:
+    Description: API Endpoint
+    Value: !GetAtt Api.Outputs.ApiUrl
+  DomainName:
+    Description: Fully qualified domain name
+    Value: !GetAtt Global.Outputs.SubDomainName
+  ZoneNameServers:
+    Description: Nameservers
+    Value: !GetAtt Global.Outputs.ZoneNameServers
+  GlobalCertificate:
+    Description: Regional wildcard certificate
+    Value: !GetAtt Global.Outputs.GlobalCertificate

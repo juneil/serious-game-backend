@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: |
+  Global stack
+Metadata:
+  Version: "0.5.2"
+
+Parameters:
+  SubDomainName:
+    Description: |
+      Sub domain name in the form
+    Type: String
+
+Resources:
+  SubDomainZone:
+    Type: AWS::Route53::HostedZone
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Name: !Ref SubDomainName
+
+  GlobalCertificate:
+    Type: AWS::CertificateManager::Certificate
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      DomainName: !Ref SubDomainName
+      SubjectAlternativeNames:
+        - !Sub "*.${SubDomainName}"
+      DomainValidationOptions:
+        # "*.${SubDomainName}" is voluntarily
+        # omitted due to a CloudFormation bug. It's not necessary
+        - DomainName: !Sub "${SubDomainName}"
+          HostedZoneId: !Ref SubDomainZone
+      ValidationMethod: DNS
+
+Outputs:
+  DomainName:
+    Description: Fully qualified domain name
+    Value: !Ref SubDomainName
+
+  ZoneNameServers:
+    Description: Nameservers
+    Value: !Join [",", !GetAtt SubDomainZone.NameServers]
+
+  GlobalCertificate:
+    Description: Regional wildcard certificate
+    Value: !Ref GlobalCertificate

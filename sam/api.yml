@@ -1,0 +1,188 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  Layer:
+    Description: Layer containing node_modules
+    Type: String
+    Default: ""
+  ApiStageName:
+    Description: Api Stage Name
+    Type: String
+  ApiName:
+    Description: Api Name
+    Type: String
+  EnableApiTracing:
+    Description: Enable X-Ray tracing in API Gateway
+    Type: String
+    AllowedValues:
+      - "true"
+      - "false"
+  EnableLambdaTracing:
+    Description: Enable X-Ray tracing in Lambdas
+    Type: String
+    AllowedValues:
+      - Active
+      - PassThrough
+  # AllowedOrigins:
+  #   Description: Allowed Origins
+  #   Type: String
+  # AllowedHeaders:
+  #   Description: Allowed Headers
+  #   Type: String
+  Table:
+    Description: DynamoDB Table
+    Type: String
+  # DomainName:
+  #   Description: The domain name for the ApiGateway
+  #   Type: String
+  # BaseDomain:
+  #   Description: The base domain name for adding the DNS records
+  #   Type: String
+  # CertificateArn:
+  #   Description: The certificate ARN for the region
+  #   Type: String
+  LoggerLevel:
+    Description: "the logger lever used to filter output, can be on of error,warning,info,trace"
+    Type: String
+    Default: info
+  EventBusName:
+    Description: "the event bus used to put message and read messages. used to test the domain without interferences with others"
+    Type: String
+    Default: default
+
+Globals:
+  Function:
+    Runtime: nodejs12.x
+    Timeout: 180
+    Tracing: !Ref EnableLambdaTracing
+    MemorySize: 1024
+    Layers: !If [IsLayerEmpty, "", [!Ref Layer]] # Set default layer for all lambdas
+    # If is required here to pass a list of layers, or an empty string (not an empty list)
+    Environment:
+      Variables:
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+        LOGGER_LEVEL: !Ref LoggerLevel
+        NODE_OPTIONS: "--enable-source-maps"
+        EVENT_BUS_NAME: !Ref EventBusName
+
+Conditions:
+  IsLayerEmpty: !Equals [!Ref Layer, ""]
+
+Resources:
+  ApiGatewayLoggingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+  ApiGwAccountDummyKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Enabled: false
+  ApiGwAccountConfig:
+    Type: AWS::ApiGateway::Account
+    DependsOn: [ApiGwAccountDummyKey]
+    Properties:
+      CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
+
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Ref ApiName
+      StageName: !Ref ApiStageName
+      TracingEnabled: !Ref EnableApiTracing
+      EndpointConfiguration:
+        Type: REGIONAL
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          DataTraceEnabled: true
+          LoggingLevel: INFO
+          MetricsEnabled: true
+          ThrottlingRateLimit: 5
+          ThrottlingBurstLimit: 10
+      # GatewayResponses:
+      #   UNAUTHORIZED:
+      #     StatusCode: "401"
+      #     ResponseTemplates:
+      #       application/json: '{"message": $context.error.messageString}'
+      #     ResponseParameters:
+      #       Headers:
+      #         Access-Control-Allow-Origin: "'*'"
+      # Cors:
+      #   AllowMethods: "'POST,GET,PUT'"
+      #   AllowHeaders: !Sub "'${AllowedHeaders}'"
+      #   AllowOrigin: !Sub "'${AllowedOrigins}'"
+      #   MaxAge: "'600'"
+      # AccessLogSetting:
+      #   DestinationArn: !GetAtt ApiAccessLogGroup.Arn
+      #   Format: '$context.identity.sourceIp $context.authorizer.claims.sub [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.requestId $context.awsEndpointRequestId $context.xrayTraceId $context.responseLatency $context.integrationLatency "$context.error.message"'
+
+  # RDomainName:
+  #   Type: AWS::ApiGateway::DomainName
+  #   Properties:
+  #     DomainName: !Ref DomainName
+  #     RegionalCertificateArn: !Ref CertificateArn
+  #     SecurityPolicy: TLS_1_2
+  #     EndpointConfiguration:
+  #       Types:
+  #         - REGIONAL
+
+  # BasePathMapping:
+  #   Type: AWS::ApiGateway::BasePathMapping
+  #   Properties:
+  #     BasePath: !Ref ApiStageName
+  #     DomainName: !Ref DomainName
+  #     RestApiId: !Ref Api
+  #     Stage: !Ref ApiStageName
+  #   # This dependency is a workaround for a bug in SAM / CF
+  #   # See https://github.com/aws/serverless-application-model/issues/192#issuecomment-406834837
+  #   DependsOn:
+  #     - ApiStage
+  #     - RDomainName
+
+  # DNSRecord:
+  #   Type: AWS::Route53::RecordSet
+  #   Properties:
+  #     HostedZoneName: !Sub "${BaseDomain}."
+  #     AliasTarget:
+  #       DNSName: !GetAtt RDomainName.RegionalDomainName
+  #       EvaluateTargetHealth: false
+  #       HostedZoneId: !GetAtt RDomainName.RegionalHostedZoneId
+  #     Name: !Ref DomainName
+  #     Type: A
+
+  # ApiAccessLogGroup:
+  #   Type: AWS::Logs::LogGroup
+  #   Properties:
+  #     RetentionInDays: 365
+
+  SpaceGetPicture:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/space/picture-get
+      Handler: index.handler
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /space
+            Method: get
+
+Outputs:
+  ApiId:
+    Description: API ID
+    Value: !Ref Api
+  ApiUrl:
+    Description: API Endpoint
+    Value: !Sub "${Api}.execute-api.${AWS::Region}.amazonaws.com"

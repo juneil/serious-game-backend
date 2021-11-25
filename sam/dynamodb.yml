@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: table.
+
+Resources:
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      SSESpecification:
+        SSEEnabled: true
+      AttributeDefinitions:
+        - AttributeName: "PK"
+          AttributeType: "S"
+        - AttributeName: "SK"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "PK"
+          KeyType: "HASH"
+        - AttributeName: "SK"
+          KeyType: "RANGE"
+      GlobalSecondaryIndexes:
+        - IndexName: "GSI1"
+          KeySchema:
+            - AttributeName: "SK"
+              KeyType: "HASH"
+            - AttributeName: "PK"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+      BillingMode: "PAY_PER_REQUEST"
+
+Outputs:
+  TableArn:
+    Description: Table ARN
+    Value: !GetAtt Table.Arn
+  TableName:
+    Description: Simulator table
+    Value: !Ref Table
