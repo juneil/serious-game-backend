@@ -1,5 +1,5 @@
 env?=dev
-region?=sa-east-1
+region?=eu-west-1
 runScenario?=./node_modules/.bin/run-scenario
 cleanTestingInfra?=./node_modules/.bin/clean-all-testing-infra
 
