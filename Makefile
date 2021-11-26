@@ -29,7 +29,7 @@ apiStageName?=v1
 apiName?=Skillins Backend
 EventBusName?=default
 
-certificateArn?=arn:aws:acm:eu-west-1:826156920251:certificate/81d30117-84d4-4b78-a1f1-06846c98719e
+certificateArn?="arn:aws:acm:eu-west-1:826156920251:certificate/81d30117-84d4-4b78-a1f1-06846c98719e"
 
 # Enable X-Ray based on the environment
 ifneq ($(findstring $(env), $(xRayEnabledEnvironments)), )
