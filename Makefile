@@ -127,10 +127,10 @@ deploy: template-output.yml
 		--stack-name $(stackName) \
 		--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
 		--tags \
-			ekonoo:cloudformation:stack-name=$(stackName) \
-			ekonoo:git:commit=$(gitCommit) \
-			ekonoo:git:version=$(gitVersion) \
-			ekonoo:git:source=$(gitRepoName) \
+			skillins:cloudformation:stack-name=$(stackName) \
+			skillins:git:commit=$(gitCommit) \
+			skillins:git:version=$(gitVersion) \
+			skillins:git:source=$(gitRepoName) \
 		--parameter-overrides "\
 			ParameterKey=ApiName,ParameterValue='$(apiName)'\
 			ParameterKey=ApiStageName,ParameterValue=$(apiStageName) \
