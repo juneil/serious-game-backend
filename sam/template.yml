@@ -38,6 +38,10 @@ Parameters:
     Description: |
       Domain name for api
     Type: String
+  Certificate:
+    Description: |
+      Certificate
+    Type: String
 
 Globals:
   Function:
@@ -61,12 +65,12 @@ Resources:
       CompatibleRuntimes:
         - nodejs12.x
 
-  Global:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./global.yml
-      Parameters:
-        SubDomainName: !Ref DomainName
+  # Global:
+  #   Type: AWS::Serverless::Application
+  #   Properties:
+  #     Location: ./global.yml
+  #     Parameters:
+  #       SubDomainName: !Ref DomainName
 
   Api:
     Type: AWS::Serverless::Application
@@ -83,7 +87,7 @@ Resources:
         Table: !GetAtt DynamoApp.Outputs.TableName
         ApiDomainName: !Ref ApiDomain
         BaseDomain: !Ref DomainName
-        CertificateArn: !GetAtt Global.Outputs.Certificate
+        CertificateArn: !Ref Certificate
 
   DynamoApp:
     Type: AWS::Serverless::Application
@@ -98,15 +102,15 @@ Outputs:
   ApiUrl:
     Description: API Endpoint
     Value: !GetAtt Api.Outputs.ApiUrl
-  DomainName:
-    Description: Fully qualified domain name
-    Value: !GetAtt Global.Outputs.SubDomainName
-  ZoneNameServers:
-    Description: Nameservers
-    Value: !GetAtt Global.Outputs.ZoneNameServers
-  Certificate:
-    Description: Regional wildcard certificate
-    Value: !GetAtt Global.Outputs.Certificate
-  ZoneId:
-    Description: Route 53 Zone ID
-    Value: !GetAtt Global.Outputs.ZoneId
+  # DomainName:
+  #   Description: Fully qualified domain name
+  #   Value: !GetAtt Global.Outputs.SubDomainName
+  # ZoneNameServers:
+  #   Description: Nameservers
+  #   Value: !GetAtt Global.Outputs.ZoneNameServers
+  # Certificate:
+  #   Description: Regional wildcard certificate
+  #   Value: !GetAtt Global.Outputs.Certificate
+  # ZoneId:
+  #   Description: Route 53 Zone ID
+  #   Value: !GetAtt Global.Outputs.ZoneId

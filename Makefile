@@ -29,6 +29,8 @@ apiStageName?=v1
 apiName?=Skillins Backend
 EventBusName?=default
 
+certificateArn?=arn:aws:acm:eu-west-1:826156920251:certificate/81d30117-84d4-4b78-a1f1-06846c98719e
+
 # Enable X-Ray based on the environment
 ifneq ($(findstring $(env), $(xRayEnabledEnvironments)), )
 enableApiTracing=true
@@ -141,7 +143,8 @@ deploy: template-output.yml
 			ParameterKey=QueueReceiveCount,ParameterValue=$(QueueReceiveCount) \
 			ParameterKey=EventBusName,ParameterValue=$(EventBusName)" \
 			ParameterKey=ApiDomain,ParameterValue=$(apiBaseDomain)" \
-			ParameterKey=DomainName,ParameterValue=$(baseDomain)"
+			ParameterKey=DomainName,ParameterValue=$(baseDomain)" \
+			ParameterKey=Certificate,ParameterValue=$(certificateArn)"
 
 swagger:
 	@npm run build:swagger
