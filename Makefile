@@ -144,7 +144,7 @@ deploy: template-output.yml
 			ParameterKey=EventBusName,ParameterValue=$(EventBusName)" \
 			ParameterKey=ApiDomain,ParameterValue=$(apiBaseDomain)" \
 			ParameterKey=DomainName,ParameterValue=$(baseDomain)" \
-			ParameterKey=Certificate,ParameterValue=$(certificateArn)"
+			ParameterKey=Certificate,ParameterValue='$(certificateArn)'"
 
 swagger:
 	@npm run build:swagger
