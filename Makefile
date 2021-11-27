@@ -141,9 +141,9 @@ deploy: template-output.yml
 			ParameterKey=ServiceName,ParameterValue=$(pkg-name) \
 			ParameterKey=LoggerLevel,ParameterValue=$(LoggerLevel) \
 			ParameterKey=QueueReceiveCount,ParameterValue=$(QueueReceiveCount) \
-			ParameterKey=EventBusName,ParameterValue=$(EventBusName)" \
-			ParameterKey=ApiDomain,ParameterValue=$(apiBaseDomain)" \
-			ParameterKey=DomainName,ParameterValue=$(baseDomain)" \
+			ParameterKey=EventBusName,ParameterValue=$(EventBusName) \
+			ParameterKey=ApiDomain,ParameterValue=$(apiBaseDomain) \
+			ParameterKey=DomainName,ParameterValue=$(baseDomain) \
 			ParameterKey=Certificate,ParameterValue='$(certificateArn)'"
 
 swagger:
