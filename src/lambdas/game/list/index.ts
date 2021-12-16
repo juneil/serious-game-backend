@@ -1,4 +1,4 @@
-import { APIGatewayProxyResponse, ApiResponse, generateHandler, Headers, Lambda, Logger } from '@ekonoo/lambdi';
+import { APIGatewayProxyResponse, ApiResponse, Cors, generateHandler, Headers, Lambda, Logger } from '@ekonoo/lambdi';
 import { AuthHeader } from '../../../models/api/common.model';
 import { ListGameResponse } from '../../../models/api/game.model';
 import { GameService } from '../../../services/game.service';
@@ -12,6 +12,7 @@ import { createErrorResponse, createResponse } from '../../../utils/response';
 export class GameListLambda {
     constructor(private readonly user: UserService, private game: GameService, private readonly logger: Logger) {}
 
+    @Cors('*')
     @ApiResponse(ListGameResponse)
     async onHandler(
         @Headers headers: AuthHeader

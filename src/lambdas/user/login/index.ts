@@ -1,4 +1,4 @@
-import { ApiResponse, generateHandler, Lambda, Logger, Payload, APIGatewayProxyResponse } from '@ekonoo/lambdi';
+import { ApiResponse, generateHandler, Lambda, Logger, Payload, APIGatewayProxyResponse, Cors } from '@ekonoo/lambdi';
 import { LoginResponse, PostLogin } from '../../../models/api/user.model';
 import { UserService } from '../../../services/user.service';
 import { BusinessErrorResponse } from '../../../utils/error';
@@ -10,6 +10,7 @@ import { createErrorResponse, createResponse } from '../../../utils/response';
 export class LoginLambda {
     constructor(private readonly user: UserService, private logger: Logger) {}
 
+    @Cors('*')
     @ApiResponse(LoginResponse)
     async onHandler(@Payload data: PostLogin): Promise<APIGatewayProxyResponse<LoginResponse | BusinessErrorResponse>> {
         return this.user

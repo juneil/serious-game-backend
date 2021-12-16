@@ -21,6 +21,7 @@ import { createErrorResponse, createResponse } from '../../../utils/response';
 export class CreateGameLambda {
     constructor(private readonly user: UserService, private game: GameService, private readonly logger: Logger) {}
 
+    @Cors('*')
     @ApiResponse(Game)
     async onHandler(
         @Payload data: PostGame,
