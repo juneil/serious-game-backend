@@ -1,6 +1,7 @@
 import {
     APIGatewayProxyResponse,
     ApiResponse,
+    Cors,
     generateHandler,
     Headers,
     Lambda,
