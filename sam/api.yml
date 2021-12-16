@@ -166,18 +166,78 @@ Resources:
   #   Properties:
   #     RetentionInDays: 365
 
-  SpaceGetPicture:
+  UserCreate:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../dist/space/picture-get
+      CodeUri: ../dist/user/create
       Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
       Events:
         Resource:
           Type: Api
           Properties:
             RestApiId: !Ref Api
-            Path: /space
+            Path: /user
+            Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+  UserLogin:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/user/login
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /user/login
+            Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+  GameCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/game/create
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /game
+            Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+  GameList:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/game/list
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /game
             Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
 
 Outputs:
   ApiId:

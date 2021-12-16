@@ -3,12 +3,12 @@ import { User } from '../models/user.model';
 import { UserRepository } from '../repositories/user.repository';
 import JWT from 'jsonwebtoken';
 import { LoginResponse } from '../models/api/user.model';
-import { BusinessError, ErrorCode } from '../utils';
+import { BusinessError, ErrorCode } from '../utils/error';
 import Crypto from 'crypto';
 
 @Service({ providers: [UserRepository] })
 export class UserService {
-    private SECRET = process.env.SECRET || '5lb4kjntl64b56bw54';
+    private SECRET = process.env.SECRET || '0lbPLntl621sadbw54';
 
     constructor(private userRepository: UserRepository) {}
 

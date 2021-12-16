@@ -1,8 +1,9 @@
 import { APIGatewayProxyResponse, ApiResponse, generateHandler, Lambda, Logger, Payload } from '@ekonoo/lambdi';
-import { CleanUser, LoginResponse, PostUser } from '../../../models/api/user.model';
-import { User, UserProvider } from '../../../models/user.model';
+import { LoginResponse, PostUser } from '../../../models/api/user.model';
+import { UserProvider } from '../../../models/user.model';
 import { UserService } from '../../../services/user.service';
-import { BusinessError, BusinessErrorResponse } from '../../../utils';
+import { BusinessErrorResponse } from '../../../utils/error';
+import { createErrorResponse, createResponse } from '../../../utils/response';
 
 @Lambda({
     providers: [UserService]
@@ -14,7 +15,6 @@ export class CreateUserLambda {
     async onHandler(@Payload data: PostUser): Promise<APIGatewayProxyResponse<LoginResponse | BusinessErrorResponse>> {
         return this.user
             .create({
-                avatar: 'none',
                 email: data.email,
                 name: data.name,
                 provider: UserProvider.Internal,
@@ -22,12 +22,8 @@ export class CreateUserLambda {
             })
             .then(user => (this.logger.info(`User created [${user.id}]`), user))
             .then(user => this.user.login(user.email, data.password))
-            .then(res => ({ statusCode: 200, body: res }))
-            .catch(err => {
-                const e = BusinessError.wrap(err);
-                this.logger.error(e);
-                return { statusCode: e.http_code, body: e.toResponse() };
-            });
+            .then(res => createResponse(res))
+            .catch(err => createErrorResponse(err, this.logger));
     }
 }
 

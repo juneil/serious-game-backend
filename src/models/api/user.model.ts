@@ -1,6 +1,6 @@
 import { Enum, ExtendRules, Item, Required } from '@ekonoo/models';
 import { PersistentEntity } from '../common.model';
-import { User, UserProvider } from '../user.model';
+import { UserProvider } from '../user.model';
 
 export class PostLogin {
     @Required email: string;
@@ -18,7 +18,6 @@ export class CleanUser extends PersistentEntity {
     @Required @Enum(...Object.values(UserProvider)) provider: UserProvider;
     @Required email: string;
     @Required name: string;
-    @Required avatar: string;
 }
 
 export class LoginResponse {
