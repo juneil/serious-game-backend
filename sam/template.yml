@@ -42,6 +42,10 @@ Parameters:
     Description: |
       Certificate
     Type: String
+  AllowedOrigins:
+    Type: String
+  AllowedHeaders:
+    Type: String
 
 Globals:
   Function:
@@ -80,6 +84,8 @@ Resources:
         Layer: !Ref NodeModulesLayer
         ApiName: !Ref ApiName
         ApiStageName: !Ref ApiStageName
+        AllowedHeaders: !Ref AllowedHeaders
+        AllowedOrigins: !Ref AllowedOrigins
         EnableApiTracing: !Ref EnableApiTracing
         EnableLambdaTracing: !Ref EnableLambdaTracing
         LoggerLevel: !Ref LoggerLevel

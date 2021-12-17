@@ -40,11 +40,8 @@ enableApiTracing=false
 enableLambdaTracing=PassThrough
 endif
 
-ifeq ($(env), dev)
-allowedOrigins=*
-else ifeq ($(env), test)
-allowedOrigins=*
-endif
+allowedHeaders?=Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token
+allowedOrigins?=*
 
 # List all other stacks dependencies
 # elasticSearchStackName can be removed if unnecessary
@@ -136,6 +133,8 @@ deploy: template-output.yml
 		--parameter-overrides "\
 			ParameterKey=ApiName,ParameterValue='$(apiName)'\
 			ParameterKey=ApiStageName,ParameterValue=$(apiStageName) \
+			ParameterKey=AllowedOrigins,ParameterValue=$(allowedOrigins) \
+			ParameterKey=AllowedHeaders,ParameterValue=$(allowedHeaders) \
 			ParameterKey=EnableApiTracing,ParameterValue=$(enableApiTracing) \
 			ParameterKey=EnableLambdaTracing,ParameterValue=$(enableLambdaTracing) \
 			ParameterKey=ServiceName,ParameterValue=$(pkg-name) \

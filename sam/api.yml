@@ -24,12 +24,12 @@ Parameters:
     AllowedValues:
       - Active
       - PassThrough
-  # AllowedOrigins:
-  #   Description: Allowed Origins
-  #   Type: String
-  # AllowedHeaders:
-  #   Description: Allowed Headers
-  #   Type: String
+  AllowedOrigins:
+    Description: Allowed Origins
+    Type: String
+  AllowedHeaders:
+    Description: Allowed Headers
+    Type: String
   Table:
     Description: DynamoDB Table
     Type: String
@@ -118,11 +118,11 @@ Resources:
       #     ResponseParameters:
       #       Headers:
       #         Access-Control-Allow-Origin: "'*'"
-      # Cors:
-      #   AllowMethods: "'POST,GET,PUT'"
-      #   AllowHeaders: !Sub "'${AllowedHeaders}'"
-      #   AllowOrigin: !Sub "'${AllowedOrigins}'"
-      #   MaxAge: "'600'"
+      Cors:
+        AllowMethods: "'POST,GET,PUT'"
+        AllowHeaders: !Sub "'${AllowedHeaders}'"
+        AllowOrigin: !Sub "'${AllowedOrigins}'"
+        MaxAge: "'600'"
       # AccessLogSetting:
       #   DestinationArn: !GetAtt ApiAccessLogGroup.Arn
       #   Format: '$context.identity.sourceIp $context.authorizer.claims.sub [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.requestId $context.awsEndpointRequestId $context.xrayTraceId $context.responseLatency $context.integrationLatency "$context.error.message"'
