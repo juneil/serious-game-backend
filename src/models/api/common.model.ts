@@ -1,5 +1,5 @@
-import { Required } from '@ekonoo/models';
+import { Simple } from '@ekonoo/models';
 
 export class AuthHeader {
-    @Required Authorization: string;
+    @Simple Authorization: string;
 }
