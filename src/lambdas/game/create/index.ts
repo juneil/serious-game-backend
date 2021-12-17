@@ -28,13 +28,15 @@ export class CreateGameLambda {
         @Payload data: PostGame,
         @Headers headers: AuthHeader
     ): Promise<APIGatewayProxyResponse<Game | BusinessErrorResponse>> {
-        return this.user.verify(headers.Authorization).then(user =>
-            this.game
-                .create({ ...data, status: GameStatus.Created, user_id: user.id as string })
-                .then(game => (this.logger.info(`Game created [${user.id}]`), game))
-                .then(res => createResponse(res))
-                .catch(err => createErrorResponse(err, this.logger))
-        );
+        return this.user
+            .verify(headers.Authorization)
+            .then(user =>
+                this.game
+                    .create({ ...data, status: GameStatus.Created, user_id: user.id as string })
+                    .then(game => (this.logger.info(`Game created [${user.id}]`), game))
+            )
+            .then(res => createResponse(res))
+            .catch(err => createErrorResponse(err, this.logger));
     }
 }
 
