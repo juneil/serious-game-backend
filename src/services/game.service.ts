@@ -14,7 +14,7 @@ export class GameService {
         return this.gameRepository.getByUserId(userId);
     }
 
-    async getByUserIdAndId(userId: string, id: string): Promise<Game | undefined> {
-        return this.gameRepository.getByUserId(userId).then(games => games.find(game => game.id === id));
+    async getById(id: string): Promise<Game | undefined> {
+        return this.gameRepository.getById(id);
     }
 }

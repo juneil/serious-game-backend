@@ -44,4 +44,20 @@ export class GameRepository {
             .then(res => res.Items || [])
             .then(res => res.map(r => Molder.instantiate(Game, r)));
     }
+
+    async getById(id: string): Promise<Game | undefined> {
+        return this.dynamo
+            .query({
+                TableName: this.TABLE,
+                IndexName: 'GSI1',
+                KeyConditionExpression: `SK = :sk AND begins_with(PK, :pk)`,
+                ExpressionAttributeValues: {
+                    ':pk': `GAME#`,
+                    ':sk': `#DETAIL#${id}`
+                }
+            })
+            .promise()
+            .then(res => res.Items || [])
+            .then(res => res.map(r => Molder.instantiate(Game, r)).pop());
+    }
 }
