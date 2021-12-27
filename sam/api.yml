@@ -238,6 +238,24 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Table
+  GameGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/game/get
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /game/{id}
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
 
 Outputs:
   ApiId:

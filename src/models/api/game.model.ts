@@ -15,3 +15,7 @@ export class PostGame {
 export class ListGameResponse {
     @Required @Item(Game) games: Game[];
 }
+
+export class GetPathParam {
+    @Required id: string;
+}

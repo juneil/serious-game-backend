@@ -1,6 +1,5 @@
 import { Service } from '@ekonoo/lambdi';
 import { DynamoDB } from 'aws-sdk';
-import { User } from '../models/user.model';
 import { Molder } from '@ekonoo/models';
 import { generateId } from '../utils/error';
 import { Game } from '../models/game.model';

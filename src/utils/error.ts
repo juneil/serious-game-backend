@@ -1,5 +1,5 @@
 import { customAlphabet } from 'nanoid';
-const NanoID = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 18);
+const NanoID = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 7);
 
 export function generateId(): string {
     return NanoID();
@@ -22,6 +22,11 @@ export class ErrorCode {
     static E003 = {
         http: 403,
         message: 'Forbidden'
+    };
+
+    static E004 = {
+        http: 404,
+        message: 'Resource not found'
     };
 
     static E999 = {
