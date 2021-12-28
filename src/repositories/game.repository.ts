@@ -42,7 +42,7 @@ export class GameRepository {
             })
             .promise()
             .then(res => res.Items || [])
-            .then(res => res.map(r => Molder.instantiate(Game, r)));
+            .then(res => res.filter(r => !(r.SK as string).includes('STATE')).map(r => Molder.instantiate(Game, r)));
     }
 
     async getById(id: string): Promise<Game | undefined> {
