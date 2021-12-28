@@ -19,11 +19,7 @@ export class GameListLambda {
     ): Promise<APIGatewayProxyResponse<ListGameResponse | BusinessErrorResponse>> {
         return this.user
             .verify(headers.Authorization)
-            .then(user =>
-                this.game
-                    .getByUserId(user.id as string)
-                    .then(game => (this.logger.info(`Game created [${user.id}]`), game))
-            )
+            .then(user => this.game.getByUserId(user.id as string))
             .then(res => createResponse({ games: res }))
             .catch(err => createErrorResponse(err, this.logger));
     }

@@ -6,38 +6,37 @@ import {
     Headers,
     Lambda,
     Logger,
-    Payload
+    PathParams
 } from '@ekonoo/lambdi';
+import { path } from 'ramda';
 import { AuthHeader } from '../../../models/api/common.model';
-import { PostGame } from '../../../models/api/game.model';
-import { Game } from '../../../models/game.model';
+import { GetPathParam, ListGameResponse } from '../../../models/api/game.model';
+import { GameState } from '../../../models/game.model';
 import { GameService } from '../../../services/game.service';
 import { UserService } from '../../../services/user.service';
-import { BusinessErrorResponse } from '../../../utils/error';
+import { BusinessError, BusinessErrorResponse, ErrorCode } from '../../../utils/error';
 import { createErrorResponse, createResponse } from '../../../utils/response';
 
 @Lambda({
     providers: [UserService, GameService]
 })
-export class CreateGameLambda {
+export class GameListLambda {
     constructor(private readonly user: UserService, private game: GameService, private readonly logger: Logger) {}
 
     @Cors('*')
-    @ApiResponse(Game)
+    @ApiResponse(ListGameResponse)
     async onHandler(
-        @Payload data: PostGame,
+        @PathParams path: GetPathParam,
         @Headers headers: AuthHeader
-    ): Promise<APIGatewayProxyResponse<Game | BusinessErrorResponse>> {
+    ): Promise<APIGatewayProxyResponse<GameState | undefined | BusinessErrorResponse>> {
         return this.user
             .verify(headers.Authorization)
-            .then(user =>
-                this.game
-                    .create({ ...data, user_id: user.id as string })
-                    .then(game => (this.logger.info(`Game created [${user.id}]`), game))
-            )
+            .then(() => this.game.getById(path.id))
+            .then(game => game || Promise.reject(new BusinessError(ErrorCode.E004, `Game not found [${path.id}]`)))
+            .then(game => this.game.getCurrentStateByGame(game))
             .then(res => createResponse(res))
             .catch(err => createErrorResponse(err, this.logger));
     }
 }
 
-export const handler = generateHandler(CreateGameLambda);
+export const handler = generateHandler(GameListLambda);

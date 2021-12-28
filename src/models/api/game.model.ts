@@ -19,3 +19,7 @@ export class ListGameResponse {
 export class GetPathParam {
     @Required id: string;
 }
+
+export class PostAppendSeed {
+    @Required @Item(Number) answers: number[];
+}

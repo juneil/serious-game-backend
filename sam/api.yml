@@ -256,6 +256,42 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Table
+  GameState:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/game/state
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /game/{id}/state
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+  GameAppendSeed:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/game/append-seed
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /game/{id}/state/seed
+            Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
 
 Outputs:
   ApiId:

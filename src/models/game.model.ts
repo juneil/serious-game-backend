@@ -1,15 +1,13 @@
-import { Enum, ExtendRules, Pattern, Required, Simple } from '@ekonoo/models';
+import { AnyOf, Enum, ExtendRules, Item, Required, Simple } from '@ekonoo/models';
 import { PersistentEntity } from './common.model';
 
-export enum GameStatus {
-    Created = '1_CREATED',
-    IndividualFormProcessed = '2_INDIVIDUAL_FORM_PROCESSED'
+export enum GameStateStep {
+    Seed = 'SEED'
 }
 
 @ExtendRules(PersistentEntity)
 export class Game extends PersistentEntity {
     @Required user_id: string;
-    @Required @Enum(...Object.values(GameStatus)) status: GameStatus;
     @Required nb_players: number;
     @Required nb_teams: number;
     @Required nb_rounds: number;
@@ -18,4 +16,22 @@ export class Game extends PersistentEntity {
     @Required penality_rate: number;
     @Required quizz: boolean;
     @Simple denomination?: string;
+}
+
+@ExtendRules(PersistentEntity)
+export class GameState {
+    @Required game_id: string;
+    @Required user_id: string;
+    @Required completed: boolean;
+    @Required @Enum(...Object.values(GameStateStep)) step: GameStateStep;
+}
+
+@ExtendRules(GameState)
+export class GameStateSeed extends GameState {
+    @Required applied: number;
+    @Required @Item(Array) answers: number[][];
+}
+
+export class StatesList {
+    @Required @Item(AnyOf(GameStateSeed)) states: GameState[];
 }
