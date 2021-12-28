@@ -29,6 +29,7 @@ export class GameState {
 @ExtendRules(GameState)
 export class GameStateSeed extends GameState {
     @Required applied: number;
+    @Required total: number;
     @Required @Item(Array) answers: number[][];
 }
 

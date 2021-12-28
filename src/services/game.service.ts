@@ -13,6 +13,7 @@ export class GameService {
                 .createState({
                     answers: [],
                     applied: 0,
+                    total: game.nb_players,
                     completed: false,
                     game_id: created.id,
                     user_id: created.user_id,
