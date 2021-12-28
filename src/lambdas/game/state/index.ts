@@ -24,7 +24,6 @@ export class GameListLambda {
     constructor(private readonly user: UserService, private game: GameService, private readonly logger: Logger) {}
 
     @Cors('*')
-    @ApiResponse(ListGameResponse)
     async onHandler(
         @PathParams path: GetPathParam,
         @Headers headers: AuthHeader
