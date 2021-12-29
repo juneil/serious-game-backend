@@ -1,16 +1,6 @@
-import {
-    APIGatewayProxyResponse,
-    ApiResponse,
-    Cors,
-    generateHandler,
-    Headers,
-    Lambda,
-    Logger,
-    PathParams
-} from '@ekonoo/lambdi';
-import { path } from 'ramda';
+import { APIGatewayProxyResponse, Cors, generateHandler, Headers, Lambda, Logger, PathParams } from '@ekonoo/lambdi';
 import { AuthHeader } from '../../../models/api/common.model';
-import { GetPathParam, ListGameResponse } from '../../../models/api/game.model';
+import { GetPathParam } from '../../../models/api/game.model';
 import { GameState } from '../../../models/game.model';
 import { GameService } from '../../../services/game.service';
 import { UserService } from '../../../services/user.service';

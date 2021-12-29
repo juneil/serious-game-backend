@@ -8,7 +8,7 @@ import {
     PathParams
 } from '@ekonoo/lambdi';
 import { GetPathParam } from '../../../models/api/game.model';
-import { Game } from '../../../models/game.model';
+import { Game, GameStateSeed } from '../../../models/game.model';
 import { GameService } from '../../../services/game.service';
 import { BusinessError, BusinessErrorResponse, ErrorCode } from '../../../utils/error';
 import { createErrorResponse, createResponse } from '../../../utils/response';
@@ -25,6 +25,7 @@ export class GameListLambda {
         return this.game
             .getById(path.id)
             .then(game => game || Promise.reject(new BusinessError(ErrorCode.E004, `Game not found [${path.id}]`)))
+            .then(game => this.game.getCurrentStateByGame(game).then(state => ({ status: state?.step, ...game })))
             .then(res => createResponse(res))
             .catch(err => createErrorResponse(err, this.logger));
     }

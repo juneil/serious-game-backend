@@ -15,6 +15,7 @@ export class Game extends PersistentEntity {
     @Required penality: number;
     @Required penality_rate: number;
     @Required quizz: boolean;
+    @Simple status?: GameStateStep;
     @Simple denomination?: string;
 }
 

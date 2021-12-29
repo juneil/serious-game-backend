@@ -120,11 +120,11 @@ export class GameRepository {
                     PK: `GAME#${userId}`,
                     SK: `#DETAIL#${gameId}#STATE#${GameStateStep.Seed}`
                 },
-                UpdateExpression: `SET applied = applied :inc, answers = list_append(if_not_exists(answers, :empty_list), :values)`,
+                UpdateExpression: `SET applied = applied + :inc, answers = list_append(if_not_exists(answers, :empty_list), :values)`,
                 ExpressionAttributeValues: {
                     ':inc': 1,
                     ':empty_list': [],
-                    ':values': answers
+                    ':values': [answers]
                 }
             })
             .promise()
