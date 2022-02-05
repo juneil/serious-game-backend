@@ -8,7 +8,7 @@ import {
     PathParams
 } from '@ekonoo/lambdi';
 import { GetPathParam } from '../../../models/api/game.model';
-import { Game, GameStateSeed } from '../../../models/game.model';
+import { Game } from '../../../models/game.model';
 import { GameService } from '../../../services/game.service';
 import { BusinessError, BusinessErrorResponse, ErrorCode } from '../../../utils/error';
 import { createErrorResponse, createResponse } from '../../../utils/response';
