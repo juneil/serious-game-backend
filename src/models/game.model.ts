@@ -2,7 +2,8 @@ import { AnyOf, Enum, ExtendRules, Item, Required, Simple } from '@ekonoo/models
 import { PersistentEntity } from './common.model';
 
 export enum GameStateStep {
-    Seed = 'SEED'
+    Seed = 'SEED',
+    Group = 'GROUP'
 }
 
 @ExtendRules(PersistentEntity)
@@ -24,16 +25,35 @@ export class GameState {
     @Required game_id: string;
     @Required user_id: string;
     @Required completed: boolean;
+    @Required applied: number;
+    @Required total: number;
     @Required @Enum(...Object.values(GameStateStep)) step: GameStateStep;
 }
 
 @ExtendRules(GameState)
 export class GameStateSeed extends GameState {
-    @Required applied: number;
-    @Required total: number;
     @Required @Item(Array) answers: number[][];
 }
 
+@ExtendRules(GameState)
+export class GameStateGroup extends GameState {
+}
+
 export class StatesList {
-    @Required @Item(AnyOf(GameStateSeed)) states: GameState[];
+    @Required @Item(AnyOf(GameStateSeed, GameStateGroup)) states: GameState[];
+}
+
+export class GameGroupPlayer {
+    @Required firstname: string;
+    @Required lastname: string;
+    @Required email: string;
+    @Required function: string;
+    @Required experience: number;
+    @Required age: number;
+}
+
+@ExtendRules(PersistentEntity)
+export class GameGroup extends PersistentEntity {
+    @Required name: string;
+    @Required @Item(GameGroupPlayer) players: GameGroupPlayer[];
 }

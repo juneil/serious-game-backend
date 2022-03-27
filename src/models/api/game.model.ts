@@ -23,3 +23,22 @@ export class GetPathParam {
 export class PostAppendSeed {
     @Required @Item(Number) answers: number[];
 }
+
+export class PutGroupParam {
+    @Required id: string;
+    @Required group: string;
+}
+
+export class PutGroupPlayer {
+    @Required firstname: string;
+    @Required lastname: string;
+    @Required email: string;
+    @Required function: string;
+    @Required @Min(0) @Max(60) experience: number;
+    @Required @Min(16) @Max(120) age: number;
+}
+
+export class PutGroupPayload {
+    @Required name: string;
+    @Required @Item(PutGroupPlayer) players: PutGroupPlayer[];
+}
