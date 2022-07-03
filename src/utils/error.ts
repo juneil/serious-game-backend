@@ -34,6 +34,11 @@ export class ErrorCode {
         message: 'Resource not available'
     };
 
+    static E006 = {
+        http: 400,
+        message: 'Bad Request'
+    };
+
     static E999 = {
         http: 500,
         message: 'Internal Server Error'

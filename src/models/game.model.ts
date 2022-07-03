@@ -57,10 +57,10 @@ export class GameState {
  */
 
 export class SeedSensis {
-    @Required @Min(4) @Max(4) @Item(Number) service: number[];
-    @Required @Min(4) @Max(4) @Item(Number) cost: number[];
-    @Required @Min(4) @Max(4) @Item(Number) performance: number[];
-    @Required @Min(4) @Max(4) @Item(Number) protection: number[];
+    @Required @Min(1) @Max(4) service: number;
+    @Required @Min(1) @Max(4) cost: number;
+    @Required @Min(1) @Max(4) performance: number;
+    @Required @Min(1) @Max(4) protection: number;
 }
 
 export class SeedAnswer {
@@ -75,7 +75,7 @@ export class SeedAnswer {
     @Required backoffice: boolean;
     @Required management_fee: boolean;
     @Required commercial: boolean;
-    @Required @Item(SeedSensis) sensis: SeedSensis[];
+    @Required sensis: SeedSensis;
 }
 
 @ExtendRules(GameState)
