@@ -19,6 +19,27 @@ export class Game extends PersistentEntity {
     @Required @Min(3) @Max(50) denomination: string;
 }
 
+export class PostGame {
+    @Required scenario_id: string;
+    @Required @Min(1) @Max(20) nb_players: number;
+    @Required @Min(2) @Max(5) nb_teams: number;
+    @Required @Min(1) @Max(5) nb_rounds: number;
+    @Required @Min(1) @Max(60) round_duration: number;
+    @Required @Min(0) @Max(60) penality: number;
+    @Required @Min(0) @Max(1) penality_rate: number;
+    @Required @Min(3) @Max(50) denomination: string;
+}
+
+export class ListGameResponse {
+    @Required @Item(Game) games: Game[];
+}
+
+/**
+ * ####################################
+ * ########## STATE MODELS ############
+ * ####################################
+ */
+
 @ExtendRules(PersistentEntity)
 export class GameState {
     @Required game_id: string;
@@ -60,7 +81,6 @@ export class SeedAnswer {
 @ExtendRules(GameState)
 export class SeedState extends GameState {
     @Required @Item(SeedAnswer) answers: SeedAnswer[];
-    @Required
 }
 
 

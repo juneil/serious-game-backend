@@ -1,6 +1,6 @@
 import { APIGatewayProxyResponse, ApiResponse, Cors, generateHandler, Headers, Lambda, Logger } from '@ekonoo/lambdi';
-import { AuthHeader } from '../../../models/api/common.model';
-import { ListGameResponse } from '../../../models/api/game.model';
+import { AuthHeader } from '../../../models/common.model';
+import { ListGameResponse } from '../../../models/game.model';
 import { GameService } from '../../../services/game.service';
 import { UserService } from '../../../services/user.service';
 import { BusinessErrorResponse } from '../../../utils/error';
