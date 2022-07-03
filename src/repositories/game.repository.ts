@@ -2,7 +2,7 @@ import { Service } from '@ekonoo/lambdi';
 import { DynamoDB } from 'aws-sdk';
 import { Molder } from '@ekonoo/models';
 import { generateId } from '../utils/error';
-import { Game, GameState } from '../models/game.model';
+import { Game, GameState, GameStateStep, SeedAnswer } from '../models/game.model';
 
 @Service()
 export class GameRepository {
@@ -125,25 +125,25 @@ export class GameRepository {
             .then(res => res.Attributes as GameState);
     }
 
-    // async updateStateSeed(userId: string, gameId: string, answers: number[]): Promise<GameStateSeed> {
-    //     return this.dynamo
-    //         .update({
-    //             TableName: this.TABLE,
-    //             ReturnValues: 'ALL_NEW',
-    //             Key: {
-    //                 PK: `GAME#${userId}`,
-    //                 SK: `#DETAIL#${gameId}#STATE#${GameStateStep.Seed}`
-    //             },
-    //             UpdateExpression: `SET applied = applied + :inc, answers = list_append(if_not_exists(answers, :empty_list), :values)`,
-    //             ExpressionAttributeValues: {
-    //                 ':inc': 1,
-    //                 ':empty_list': [],
-    //                 ':values': [answers]
-    //             }
-    //         })
-    //         .promise()
-    //         .then(res => Molder.instantiate(GameStateSeed, res.Attributes));
-    // }
+    async updateStateSeed(userId: string, gameId: string, answers: SeedAnswer): Promise<GameState> {
+        return this.dynamo
+            .update({
+                TableName: this.TABLE,
+                ReturnValues: 'ALL_NEW',
+                Key: {
+                    PK: `GAME#${userId}`,
+                    SK: `#DETAIL#${gameId}#STATE#${GameStateStep.Seed}`
+                },
+                UpdateExpression: `SET applied = applied + :inc, answers = list_append(if_not_exists(answers, :empty_list), :values)`,
+                ExpressionAttributeValues: {
+                    ':inc': 1,
+                    ':empty_list': [],
+                    ':values': [answers]
+                }
+            })
+            .promise()
+            .then(res => Molder.instantiate(GameState, res.Attributes));
+    }
 
     // async updateStateGroup(userId: string, gameId: string): Promise<GameStateGroup> {
     //     return this.dynamo

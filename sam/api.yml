@@ -222,6 +222,24 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Table
+  GameSeed:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/game/seed
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /game/{id}/seed
+            Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
 
 Outputs:
   ApiId:
