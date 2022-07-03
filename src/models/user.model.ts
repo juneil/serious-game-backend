@@ -12,3 +12,19 @@ export class User extends PersistentEntity {
     @Required name: string;
     @Required password: string;
 }
+
+export class PostLogin {
+    @Required email: string;
+    @Required password: string;
+}
+
+@ExtendRules(PersistentEntity)
+export class CleanUser extends PersistentEntity {
+    @Required email: string;
+    @Required name: string;
+}
+
+export class LoginResponse {
+    @Required user: CleanUser;
+    @Required token: string;
+}

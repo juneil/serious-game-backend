@@ -2,7 +2,7 @@ import { Service } from '@ekonoo/lambdi';
 import { User } from '../models/user.model';
 import { UserRepository } from '../repositories/user.repository';
 import JWT from 'jsonwebtoken';
-import { LoginResponse } from '../models/api/user.model';
+import { LoginResponse } from '../models/user.model';
 import { BusinessError, ErrorCode } from '../utils/error';
 import Crypto from 'crypto';
 
@@ -51,7 +51,7 @@ export class UserService {
     }
 
     private generateToken(user: User): string {
-        return JWT.sign({ email: user.email }, this.SECRET, { expiresIn: '30d', issuer: 'guyfum', audience: 'valeas' });
+        return JWT.sign({ email: user.email }, this.SECRET, { expiresIn: '30d', issuer: 'skillins', audience: 'skillins' });
     }
 
     private hashPassword(password: string): string {

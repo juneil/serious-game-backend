@@ -110,22 +110,11 @@ Resources:
           MetricsEnabled: true
           ThrottlingRateLimit: 5
           ThrottlingBurstLimit: 10
-      # GatewayResponses:
-      #   UNAUTHORIZED:
-      #     StatusCode: "401"
-      #     ResponseTemplates:
-      #       application/json: '{"message": $context.error.messageString}'
-      #     ResponseParameters:
-      #       Headers:
-      #         Access-Control-Allow-Origin: "'*'"
       Cors:
         AllowMethods: "'POST,GET,PUT'"
         AllowHeaders: !Sub "'${AllowedHeaders}'"
         AllowOrigin: !Sub "'${AllowedOrigins}'"
         MaxAge: "'600'"
-      # AccessLogSetting:
-      #   DestinationArn: !GetAtt ApiAccessLogGroup.Arn
-      #   Format: '$context.identity.sourceIp $context.authorizer.claims.sub [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.requestId $context.awsEndpointRequestId $context.xrayTraceId $context.responseLatency $context.integrationLatency "$context.error.message"'
 
   RDomainName:
     Type: AWS::ApiGateway::DomainName
@@ -161,29 +150,6 @@ Resources:
       Name: !Ref ApiDomainName
       Type: A
 
-  # ApiAccessLogGroup:
-  #   Type: AWS::Logs::LogGroup
-  #   Properties:
-  #     RetentionInDays: 365
-
-  UserCreate:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ../dist/user/create
-      Handler: index.handler
-      Environment:
-        Variables:
-          TABLE: !Ref Table
-      Events:
-        Resource:
-          Type: Api
-          Properties:
-            RestApiId: !Ref Api
-            Path: /user
-            Method: post
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Table
   UserLogin:
     Type: AWS::Serverless::Function
     Properties:
@@ -253,42 +219,6 @@ Resources:
             RestApiId: !Ref Api
             Path: /game/{id}
             Method: get
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Table
-  GameState:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ../dist/game/state
-      Handler: index.handler
-      Environment:
-        Variables:
-          TABLE: !Ref Table
-      Events:
-        Resource:
-          Type: Api
-          Properties:
-            RestApiId: !Ref Api
-            Path: /game/{id}/state
-            Method: get
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Table
-  GameAppendSeed:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ../dist/game/append-seed
-      Handler: index.handler
-      Environment:
-        Variables:
-          TABLE: !Ref Table
-      Events:
-        Resource:
-          Type: Api
-          Properties:
-            RestApiId: !Ref Api
-            Path: /game/{id}/state/seed
-            Method: post
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Table
