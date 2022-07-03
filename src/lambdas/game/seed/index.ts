@@ -16,11 +16,12 @@ export class GameSeedLambda {
         @PathParams path: GetPathParam,
         @Payload payload: SeedAnswer
     ): Promise<APIGatewayProxyResponse<void | BusinessErrorResponse>> {
-        if (Object.values(payload.sensis).reduce((a, c) => a + c) !== 10) {
-            throw new BusinessError(ErrorCode.E006, 'Sensis sum must be 10');
-        }
-        return this.game
-            .updateStateSeed(path.id, payload)
+        return Promise.resolve(Object.values(payload.sensis).reduce((a, c) => a + c))
+            .then(val => val !== 10
+                ? Promise.reject(new BusinessError(ErrorCode.E006, 'Sensis sum must be 10'))
+                : undefined
+            )
+            .then(() => this.game.updateStateSeed(path.id, payload))
             .then(res => createResponse(res))
             .catch(err => createErrorResponse(err, this.logger));
     }
