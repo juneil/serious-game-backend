@@ -1,5 +1,5 @@
 import { Service } from '@ekonoo/lambdi';
-import { Game } from '../models/game.model';
+import { Game, GameStateStep } from '../models/game.model';
 import { GameRepository } from '../repositories/game.repository';
 
 @Service({ providers: [GameRepository] })
@@ -8,19 +8,18 @@ export class GameService {
 
     async create(game: Game): Promise<Game> {
         return this.gameRepository.create(game)
-        // .then(created =>
-            // this.gameRepository
-            //     .createState({
-            //         answers: [],
-            //         applied: 0,
-            //         total: game.nb_players,
-            //         completed: false,
-            //         game_id: created.id,
-            //         user_id: created.user_id,
-            //         step: GameStateStep.Seed
-            //     } as GameStateSeed)
-            //     .then(() => created)
-        // );
+        .then(created =>
+            this.gameRepository
+                .createState({
+                    applied: 0,
+                    total: game.nb_players,
+                    completed: false,
+                    game_id: created.id as string,
+                    user_id: created.user_id,
+                    step: GameStateStep.Seed
+                })
+                .then(() => created)
+        );
     }
 
     async getByUserId(userId: string): Promise<Game[]> {
