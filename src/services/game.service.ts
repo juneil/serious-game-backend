@@ -27,8 +27,8 @@ export class GameService {
         return this.gameRepository.getByUserId(userId);
     }
 
-    async getById(id: string): Promise<Game | undefined> {
-        return this.gameRepository.getById(id);
+    async getByUserIdAndId(userId: string, id: string): Promise<Game | undefined> {
+        return this.gameRepository.getByUserIdAndId(userId, id);
     }
 
     // async updateStateSeed(gameId: string, answers: number[]): Promise<void> {
