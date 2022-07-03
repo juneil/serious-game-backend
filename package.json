@@ -1,7 +1,7 @@
 {
     "name": "skillins-backend",
     "version": "1.0.0",
-    "description": "",
+    "description": "Skillins Game Engine",
     "main": "index.js",
     "scripts": {
         "get-name": "echo $npm_package_name",
