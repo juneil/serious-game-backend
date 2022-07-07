@@ -7,6 +7,7 @@ const Vega = require('vega-statistics');
 
 @Service({ providers: [GameRepository] })
 export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
+    public type = GameStateStep.Seed;
     private size: 10000;
     private baseAmount = 5000;
     private ageStd: any;

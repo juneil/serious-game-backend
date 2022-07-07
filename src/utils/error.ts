@@ -39,6 +39,11 @@ export class ErrorCode {
         message: 'Bad Request'
     };
 
+    static E007 = {
+        http: 500,
+        message: 'Unrecognized state'
+    };
+
     static E999 = {
         http: 500,
         message: 'Internal Server Error'

@@ -4,6 +4,7 @@ import { BusinessError, ErrorCode } from '../../utils/error';
 
 export abstract class BaseStateService<T extends GameState, U> {
     protected gameRepository: GameRepository;
+    abstract type: GameStateStep;
     abstract update(game: Game, state: T, data: U): Promise<GameState>;
 
     protected checkState(game: Game, state: T, step: GameStateStep): T {

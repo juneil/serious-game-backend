@@ -3,6 +3,7 @@ import { DynamoDB } from 'aws-sdk';
 import { Molder } from '@ekonoo/models';
 import { generateId } from '../utils/error';
 import { Game, GameState, GameStateStep, SeedAnswer, SeedSensisResult, SeedState } from '../models/game.model';
+import { GroupAnswer, GroupState } from '../models/group.model';
 
 @Service()
 export class GameRepository {
@@ -180,6 +181,26 @@ export class GameRepository {
             })
             .promise()
             .then(() => data);
+    }
+
+    async updateStateGroup(userId: string, gameId: string, answers: GroupAnswer): Promise<GroupState> {
+        return this.dynamo
+            .update({
+                TableName: this.TABLE,
+                ReturnValues: 'ALL_NEW',
+                Key: {
+                    PK: `GAME#${userId}`,
+                    SK: `#DETAIL#${gameId}#STATE#${GameStateStep.Group}`
+                },
+                UpdateExpression: `SET applied = applied + :inc, answers = list_append(if_not_exists(answers, :empty_list), :values)`,
+                ExpressionAttributeValues: {
+                    ':inc': 1,
+                    ':empty_list': [],
+                    ':values': [answers]
+                }
+            })
+            .promise()
+            .then(res => Molder.instantiate(GroupState, res.Attributes));
     }
 
     // async updateStateGroup(userId: string, gameId: string): Promise<GameStateGroup> {
