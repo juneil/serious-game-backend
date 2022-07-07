@@ -1,4 +1,4 @@
-import { Enum, ExtendRules, Item, Max, Min, Required } from '@ekonoo/models';
+import { Enum, ExtendRules, Item, Max, Min, Required, Simple } from '@ekonoo/models';
 import { PersistentEntity } from './common.model';
 
 export enum GameStateStep {
@@ -64,6 +64,7 @@ export class SeedSensis {
 }
 
 export class SeedAnswer {
+    @Required @Min(16) @Max(120) age: number;
     @Required tg: boolean;
     @Required uc: boolean;
     @Required tg_rate: boolean;
@@ -78,12 +79,31 @@ export class SeedAnswer {
     @Required sensis: SeedSensis;
 }
 
+export class SeedSensisResult {
+    @Required age: number;
+    @Required tg: number;
+    @Required uc: number;
+    @Required tg_rate: number;
+    @Required commission: number;
+    @Required entry_fee: number;
+    @Required garantee: number;
+    @Required garantee_fee: number;
+    @Required marketing: number;
+    @Required backoffice: number;
+    @Required management_fee: number;
+    @Required commercial: number;
+    @Required service: number;
+    @Required cost: number;
+    @Required performance: number;
+    @Required protection: number;
+}
+
 @ExtendRules(GameState)
 export class SeedState extends GameState {
     @Required @Item(SeedAnswer) answers: SeedAnswer[];
+    @Simple sensis?: SeedSensisResult;
+    @Simple @Item(Number) region_indexes: number[];
 }
-
-
 
 // export class GameGroupPlayer {
 //     @Required firstname: string;

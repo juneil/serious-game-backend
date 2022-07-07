@@ -31,7 +31,7 @@
 //             .map(fee => ({ f: fee, t: fee / fees.reduce((a, c) => a + c, 0) }))
 //             .map(item => ({
 //                 ...item,
-//                 tb: 1 / item.f
+//                 tb: item.f === 0 ? 0 : 1 / item.f
 //             }))
 //             .map((item, i, arr) => {
 //                 const _t = arr.map(x => x.tb).reduce((a, c) => a + c, 0);

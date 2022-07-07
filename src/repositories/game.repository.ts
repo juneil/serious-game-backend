@@ -2,7 +2,7 @@ import { Service } from '@ekonoo/lambdi';
 import { DynamoDB } from 'aws-sdk';
 import { Molder } from '@ekonoo/models';
 import { generateId } from '../utils/error';
-import { Game, GameState, GameStateStep, SeedAnswer } from '../models/game.model';
+import { Game, GameState, GameStateStep, SeedAnswer, SeedSensisResult, SeedState } from '../models/game.model';
 
 @Service()
 export class GameRepository {
@@ -57,7 +57,7 @@ export class GameRepository {
             })
             .promise()
             .then(res => res.Items || [])
-            .then(res => res.length ? Molder.instantiate(Game, res.pop()) : undefined);
+            .then(res => (res.length ? Molder.instantiate(Game, res.pop()) : undefined));
     }
 
     async getById(id: string): Promise<Game | undefined> {
@@ -91,7 +91,7 @@ export class GameRepository {
                 Item: formatedData
             })
             .promise()
-            .then(() => formatedData);
+            .then(() => Molder.instantiate(GameState, formatedData));
     }
 
     async getStatesByGame(game: Game): Promise<GameState[]> {
@@ -125,7 +125,7 @@ export class GameRepository {
             .then(res => res.Attributes as GameState);
     }
 
-    async updateStateSeed(userId: string, gameId: string, answers: SeedAnswer): Promise<GameState> {
+    async updateStateSeed(userId: string, gameId: string, answers: SeedAnswer): Promise<SeedState> {
         return this.dynamo
             .update({
                 TableName: this.TABLE,
@@ -142,7 +142,44 @@ export class GameRepository {
                 }
             })
             .promise()
-            .then(res => Molder.instantiate(GameState, res.Attributes));
+            .then(res => Molder.instantiate(SeedState, res.Attributes));
+    }
+
+    async completeStateSeed(state: SeedState, data: SeedSensisResult, regionIndexes: number[]): Promise<SeedState> {
+        return this.dynamo
+            .update({
+                TableName: this.TABLE,
+                ReturnValues: 'ALL_NEW',
+                Key: {
+                    PK: `GAME#${state.user_id}`,
+                    SK: `#DETAIL#${state.game_id}#STATE#${GameStateStep.Seed}`
+                },
+                UpdateExpression: `SET sensis = :data, region_indexes = :indexes`,
+                ExpressionAttributeValues: {
+                    ':data': data,
+                    ':indexes': regionIndexes
+                }
+            })
+            .promise()
+            .then(res => Molder.instantiate(SeedState, res.Attributes));
+    }
+
+    async createSeed(state: SeedState, round: number, data: any[], date = Date.now()): Promise<any[]> {
+        const formatedData = {
+            data,
+            PK: `GAME#${state.user_id}`,
+            SK: `#DETAIL#${state.game_id}#ROUND#${round}#SEED`,
+            updated_date: date,
+            created_date: date
+        };
+        return this.dynamo
+            .put({
+                TableName: this.TABLE,
+                ConditionExpression: 'attribute_not_exists(PK)',
+                Item: formatedData
+            })
+            .promise()
+            .then(() => data);
     }
 
     // async updateStateGroup(userId: string, gameId: string): Promise<GameStateGroup> {

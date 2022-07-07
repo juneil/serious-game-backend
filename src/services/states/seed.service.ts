@@ -1,34 +1,165 @@
-// import { Service } from '@ekonoo/lambdi';
-// import { Game, GameStateSeed, GameStateStep } from '../../models/game.model';
-// import { GameRepository } from '../../repositories/game.repository';
-// import { BusinessError, ErrorCode } from '../../utils/error';
-// import { StateService } from './state.service';
+import { Service } from '@ekonoo/lambdi';
+import { Game, GameState, GameStateStep, SeedAnswer, SeedSensisResult, SeedState } from '../../models/game.model';
+import { GameRepository } from '../../repositories/game.repository';
+import { BaseStateService } from './base-state.service';
+import * as MathJS from 'mathjs';
+const Vega = require('vega-statistics');
 
-// @Service({ providers: [GameRepository] })
-// export class SeedStateService extends StateService<GameStateSeed, { answers: number[] }> {
-//     constructor(private gameRepository: GameRepository) {
-//         super();
-//     }
+@Service({ providers: [GameRepository] })
+export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
+    private size: 10000;
+    private baseAmount = 5000;
+    private ageStd: any;
 
-//     private checkState(game: Game, state: GameStateSeed): GameStateSeed {
-//         if (state?.step === GameStateStep.Seed && (state as GameStateSeed).applied < game.nb_players) {
-//             return state;
+    constructor(protected gameRepository: GameRepository) {
+        super();
+    }
+
+    async update(game: Game, state: SeedState, data: SeedAnswer): Promise<GameState> {
+        const step = GameStateStep.Seed;
+        return Promise.resolve(state)
+            .then(state => super.checkState(game, state, step))
+            .then(() =>
+                this.gameRepository
+                    .updateStateSeed(game.user_id, game.id as string, data)
+                    .then(state => ({ state, game }))
+            )
+            .then(({ state, game }) =>
+                this.complete(game, state, step).then(completed =>
+                    completed ? this.completeCompute(state).then(() => state) : state
+                )
+            );
+    }
+
+    async completeCompute(state: SeedState): Promise<void> {
+        const values = state.answers.map(a => ({ ...a, sensis: undefined }));
+        const sensis = state.answers.map(a => a.sensis);
+        const convertVal = (v: boolean | number) => (typeof v === 'boolean' ? (v ? 1 : 0) : v);
+        const merge = (items: any[]) =>
+            Object.entries(
+                items.reduce(
+                    (a, c) =>
+                        Object.entries(c)
+                            .filter(([_, v]) => v !== undefined)
+                            .map(([k, v]) => ({ [k]: convertVal((a as any)[k] || 0) + convertVal(v as boolean) }))
+                            .reduce((a, c) => ({ ...a, ...c })),
+                    {} as any
+                )
+            );
+        const res1 = merge(values)
+            .map(([k, v]) => ({ [k]: (v as number) / state.answers.length }))
+            .reduce((a, c) => ({ ...a, ...c }));
+        const res2 = merge(sensis)
+            .map(([k, v]) => ({ [k]: (v as number) / state.answers.length }))
+            .reduce((a, c) => ({ ...a, ...c }));
+
+        return this.gameRepository
+            .completeStateSeed(
+                state,
+                {
+                    ...(res1 as any),
+                    ...(res2 as any)
+                } as SeedSensisResult,
+                this.getRegionIndexes()
+            )
+            .then(state => this.generate(state, 1))
+            .then(() => undefined);
+    }
+
+    getRegionIndexes(): number[] {
+        return new Array(7)
+            .fill(null)
+            .map(() => MathJS.random(0, 1))
+            .map((val, _, arr) => val / arr.reduce((a, c) => a + c, 0))
+            .map(
+                (
+                    sum => (value: number) =>
+                        (sum += value)
+                )(0)
+            );
+    }
+
+    async generate(state: SeedState, round: number): Promise<any[]> {
+        const arr = new Array(this.size)
+            .fill(null)
+            .map(() => this.computeAge(state.sensis?.age || 0))
+            .map(age => this.computeAmount(age))
+            .map(item => [...item, 0.01])
+            .map(item => [...item, MathJS.random(0, 1)])
+            .map(([age, amount, out, r]) => [age, amount, out, this.computeRegion(state.region_indexes, r)]);
+        return this.gameRepository.createSeed(state, round, arr);
+    }
+
+    private computeAge(age: number): number {
+        if (!this.ageStd) {
+            this.ageStd = MathJS.std([age], 'unbiased');
+        }
+        const val = Vega.randomNormal([age], this.ageStd).sample();
+        return val < 18 ? 18 : val > 90 ? 90 : Math.round(val);
+    }
+
+    private computeAmount(age: number): [number, number] {
+        const categories = [25, 30, 35, 40, 120];
+        const rate = [0, 0.1, 0.15, 0.2, 0.3];
+        const value =
+            categories.find((c, i) => {
+                return age < c && (categories[i - 1] === undefined || age >= categories[i - 1]);
+            }) || 0;
+        return [
+            age,
+            Math.round(Vega.randomNormal((1 + rate[categories.indexOf(value)]) * this.baseAmount, 500).sample())
+        ];
+    }
+
+    private computeRegion(indexes: number[], value: number): number {
+        const index =
+            indexes.find((c, i) => {
+                return value < c && (indexes[i - 1] === undefined || value >= indexes[i - 1]);
+            }) || 0;
+        return indexes.indexOf(index) + 1;
+    }
+}
+
+// const data = [
+//     {
+//         tg: true,
+//         uc: true,
+//         tg_rate: false,
+//         commission: false,
+//         entry_fee: false,
+//         garantee: false,
+//         garantee_fee: false,
+//         marketing: false,
+//         backoffice: false,
+//         management_fee: false,
+//         commercial: true,
+//         sensis: {
+//             service: 1,
+//             cost: 2,
+//             performance: 3,
+//             protection: 4
 //         }
-//         throw new BusinessError(ErrorCode.E005, `Can not append for seeding for the game [${game.id}]`);
+//     },
+//     {
+//         tg: true,
+//         uc: true,
+//         tg_rate: true,
+//         commission: true,
+//         entry_fee: false,
+//         garantee: false,
+//         garantee_fee: false,
+//         marketing: false,
+//         backoffice: false,
+//         management_fee: false,
+//         commercial: false,
+//         sensis: {
+//             service: 3,
+//             cost: 1,
+//             performance: 2,
+//             protection: 4
+//         }
 //     }
+// ];
 
-//     async update(game: Game, state: GameStateSeed, data: { answers: number[] }): Promise<GameStateSeed> {
-//         return Promise.resolve(state)
-//             .then(state => this.checkState(game, state))
-//             .then(() =>
-//                 this.gameRepository
-//                     .addStateSeed(game.user_id, game.id as string, data.answers)
-//                     .then(state => ({ state, game }))
-//             )
-//             .then(({ state, game }) => (state.applied >= game.nb_players ? this.complete(game, state) : state));
-//     }
-
-//     async complete(game: Game, state: GameStateSeed): Promise<GameStateSeed> {
-//         return this.gameRepository.completeState(state).then(() => this.seed.generate(state));
-//     }
-// }
+// const svc = new SeedStateService({} as any);
+// console.log(svc.completeCompute({ answers: data } as any));
