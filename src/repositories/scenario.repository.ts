@@ -60,7 +60,7 @@ export class ScenarioRepository {
                 .map(r => Molder.instantiate(Scenario, r))
                 .map(sc => ({ ...sc, funds: sc.funds.map(f => ({
                         ...f,
-                        nav: f.nav.indexOf(round - 1) || 0
+                        nav: f.nav[round - 1] ?? 0
                     })
                 )}))
                 .map(sc => Molder.instantiate(ScenarioFunds, sc))
