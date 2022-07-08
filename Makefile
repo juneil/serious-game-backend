@@ -168,3 +168,7 @@ clean:
 	-@rm -f template-output.yml
 	-@rm -rf node_modules
 	-@rm -rf dist
+
+swagger:
+	@npm run build:swagger
+	@aws --region $(region) s3 cp ./dist/swagger.json s3://skillins-init/swagger.json

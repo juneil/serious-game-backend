@@ -168,6 +168,21 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Table
+  Swagger:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/swagger
+      Handler: index.handler
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /swagger.json
+            Method: get
+      Policies:
+        - S3CrudPolicy:
+            BucketName: skillins-init
   GameCreate:
     Type: AWS::Serverless::Function
     Properties:
