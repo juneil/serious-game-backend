@@ -119,8 +119,10 @@ export class GameRepository {
                     PK: `GAME#${state.user_id}`,
                     SK: `#DETAIL#${state.game_id}#STATE#${state.step}`
                 },
-                UpdateExpression: `SET completed = true, applied = total`,
-                ExpressionAttributeValues: {}
+                UpdateExpression: `SET completed = :true`,
+                ExpressionAttributeValues: {
+                    ':true': true
+                }
             })
             .promise()
             .then(res => res.Attributes as GameState);

@@ -27,12 +27,12 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
             )
             .then(({ state, game }) =>
                 this.complete(game, state, step).then(completed =>
-                    completed ? this.completeCompute(state).then(() => state) : state
+                    completed ? this.completeCompute(game, state).then(() => state) : state
                 )
             );
     }
 
-    async completeCompute(state: SeedState): Promise<void> {
+    async completeCompute(game: Game, state: SeedState): Promise<void> {
         const values = state.answers.map(a => ({ ...a, sensis: undefined }));
         const sensis = state.answers.map(a => a.sensis);
         const convertVal = (v: boolean | number) => (typeof v === 'boolean' ? (v ? 1 : 0) : v);
@@ -63,7 +63,17 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
                 } as SeedSensisResult,
                 this.getRegionIndexes()
             )
-            .then(state => this.generate(state, 1))
+            .then(state => Promise.all([
+                this.generate(state, 1),
+                this.gameRepository.createState({
+                    step: GameStateStep.Group,
+                    game_id: state.game_id,
+                    user_id: state.user_id,
+                    applied: 0,
+                    total: game.nb_teams,
+                    completed: false
+                })
+            ]))
             .then(() => undefined);
     }
 
@@ -120,47 +130,3 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
         return indexes.indexOf(index) + 1;
     }
 }
-
-// const data = [
-//     {
-//         tg: true,
-//         uc: true,
-//         tg_rate: false,
-//         commission: false,
-//         entry_fee: false,
-//         garantee: false,
-//         garantee_fee: false,
-//         marketing: false,
-//         backoffice: false,
-//         management_fee: false,
-//         commercial: true,
-//         sensis: {
-//             service: 1,
-//             cost: 2,
-//             performance: 3,
-//             protection: 4
-//         }
-//     },
-//     {
-//         tg: true,
-//         uc: true,
-//         tg_rate: true,
-//         commission: true,
-//         entry_fee: false,
-//         garantee: false,
-//         garantee_fee: false,
-//         marketing: false,
-//         backoffice: false,
-//         management_fee: false,
-//         commercial: false,
-//         sensis: {
-//             service: 3,
-//             cost: 1,
-//             performance: 2,
-//             protection: 4
-//         }
-//     }
-// ];
-
-// const svc = new SeedStateService({} as any);
-// console.log(svc.completeCompute({ answers: data } as any));
