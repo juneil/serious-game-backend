@@ -39,12 +39,22 @@ export class Scenario extends PersistentEntity {
 //             "code": "FRXXXXXX01",
 //             "types": ["GAZ"],
 //             "srri": 1
+//              "currency": "EUR"
 //             "nav": [110, 100, 98, 73]
 //         },
 //         {
 //             "code": "FRXXXXXX02",
 //             "types": ["GAZ"],
 //             "srri": 1
+//              "currency": "EUR"
+//             "nav": [4400, 4399, 4300, 4240]
+//         },
+//         {
+//             "code": "USXXXXXX02",
+//             "types": ["GAZ"],
+//             "srri": 1
+//              "currency": "USD",
+//              "conversion": [1.2, 1.3, 1.4, 1.5],
 //             "nav": [4400, 4399, 4300, 4240]
 //         }
 //     ],
@@ -90,7 +100,9 @@ export class Scenario extends PersistentEntity {
 //             "max_entry_fees_penalty": 100000,
 //             "max_management_fees": 0.03,
 //             "max_management_fees_penalty": 250000,
+
 //             "death_modifier": 1,
+
 //             "mandatory_investment": {
 //    "legal": {
 //        "value": 3,

@@ -98,6 +98,13 @@ function extractModels(lambdas: LambdaApiProperties[]): PropsAndModels[] {
         .filter(Boolean) as PropsAndModels[];
 }
 
+function getResponses(props: PropsAndModels): [string, any][] {
+    const entries = Object.entries(props.responses || {});
+    return entries.length > 0
+        ? entries.filter(([code, _]) => code !== '4XX' && code !== '5XX')
+        : ([['200', undefined]] as [string, any][]);
+}
+
 function generate(): string {
     const props = extractModels(getLambdaApiProperties(readSAMTemplate()));
     return JSON.stringify({
@@ -123,11 +130,10 @@ function generate(): string {
                             }
                         },
                         responses: {
-                            ...Object.entries(c.responses || [])
-                                .filter(([code, _]) => code !== '4XX' && code !== '5XX')
+                            ...getResponses(c)
                                 .map(([code, model]) => ({
                                     [code]: {
-                                        content: {
+                                        content: model && {
                                             'application/json': {
                                                 schema: cleanSchema(Molder.jsonSchema(model))
                                             }

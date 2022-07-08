@@ -8,7 +8,7 @@ export abstract class BaseStateService<T extends GameState, U> {
     abstract update(game: Game, state: T, data: U): Promise<GameState>;
 
     protected checkState(game: Game, state: T, step: GameStateStep): T {
-        if (state?.step === step && state.applied < game.nb_players) {
+        if (state?.step === step && state.applied <= game.nb_players) {
             return state;
         }
         throw new BusinessError(ErrorCode.E005, `State cannot be updated [${game.id}]`);
