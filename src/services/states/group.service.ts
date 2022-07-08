@@ -1,8 +1,7 @@
 import { Service } from '@ekonoo/lambdi';
-import { Game, GameState, GameStateStep } from '../../models/game.model';
+import { Game, GameState, GameStateStep, GroupAnswer, GroupState } from '../../models/game.model';
 import { GameRepository } from '../../repositories/game.repository';
 import { BaseStateService } from './base-state.service';
-import { GroupAnswer, GroupState } from '../../models/group.model';
 
 @Service({ providers: [GameRepository] })
 export class GroupStateService extends BaseStateService<GroupState, GroupAnswer> {

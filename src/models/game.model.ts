@@ -3,7 +3,16 @@ import { PersistentEntity } from './common.model';
 
 export enum GameStateStep {
     Seed = 'SEED',
-    Group = 'GROUP'
+    Group = 'GROUP',
+    RoundP1 = 'ROUND_P1',
+    RoundP2 = 'ROUND_P2',
+    RoundP3 = 'ROUND_P3'
+}
+
+export enum GameInvestmentType {
+    Legal = 'LEGAL',
+    Marketing = 'MARKETING',
+    Digital = 'DIGITAL'
 }
 
 @ExtendRules(PersistentEntity)
@@ -47,6 +56,7 @@ export class GameState {
     @Required completed: boolean;
     @Required applied: number;
     @Required total: number;
+    @Simple round?: number;
     @Required @Enum(...Object.values(GameStateStep)) step: GameStateStep;
 }
 
@@ -105,17 +115,42 @@ export class SeedState extends GameState {
     @Simple @Item(Number) region_indexes: number[];
 }
 
-// export class GameGroupPlayer {
-//     @Required firstname: string;
-//     @Required lastname: string;
-//     @Required email: string;
-//     @Required function: string;
-//     @Required experience: number;
-//     @Required age: number;
-// }
+/**
+ * ####################################
+ * ######## GROUP STATE MODELS ########
+ * ####################################
+ */
 
-// @ExtendRules(PersistentEntity)
-// export class GameGroup extends PersistentEntity {
-//     @Required name: string;
-//     @Required @Item(GameGroupPlayer) players: GameGroupPlayer[];
-// }
+export class GroupPlayer {
+    @Required @Min(2) @Max(100) firstname: string;
+    @Required @Min(2) @Max(100) lastname: string;
+    @Required @Min(2) @Max(100) email: string;
+    @Required @Min(2) @Max(50) function: string;
+    @Required @Min(0) @Max(90) experience: number;
+    @Required @Min(16) @Max(120) age: number;
+}
+
+export class GroupAnswer {
+    @Required @Min(2) @Max(100) name: string;
+    @Required @Item(GroupPlayer) players: GroupPlayer[];
+}
+
+@ExtendRules(GameState)
+export class GroupState extends GameState {
+    @Required @Item(GroupAnswer) answers: GroupAnswer[];
+}
+
+/**
+ * ####################################
+ * ########  RP1 STATE MODELS  ########
+ * ####################################
+ */
+
+export class RoundP1Answer {
+
+}
+
+ @ExtendRules(GameState)
+ export class RoundP1State extends GameState {
+     @Required @Item(SeedAnswer) answers: SeedAnswer[];
+ }

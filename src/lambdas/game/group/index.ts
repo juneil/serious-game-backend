@@ -1,7 +1,6 @@
 import { APIGatewayProxyResponse, Cors, generateHandler, Lambda, Logger, PathParams, Payload } from '@ekonoo/lambdi';
 import { GetPathParam } from '../../../models/common.model';
-import { GameStateStep } from '../../../models/game.model';
-import { GroupAnswer } from '../../../models/group.model';
+import { GameStateStep, GroupAnswer } from '../../../models/game.model';
 import { GameService } from '../../../services/game.service';
 import { BusinessErrorResponse } from '../../../utils/error';
 import { createErrorResponse, createResponse } from '../../../utils/response';

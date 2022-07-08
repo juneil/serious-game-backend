@@ -273,6 +273,42 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Table
+  ScenarioList:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/scenario/list
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /scenario
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+  ScenarioFunds:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/scenario/funds
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /scenario/{id}/funds/{round}
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
 
 Outputs:
   ApiId:

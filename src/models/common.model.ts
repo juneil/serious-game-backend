@@ -1,4 +1,4 @@
-import { Required, Simple } from '@ekonoo/models';
+import { Enum, Required, Simple } from '@ekonoo/models';
 
 export class PersistentEntity {
     @Simple id?: string;
@@ -14,7 +14,7 @@ export class GetPathParam {
     @Required id: string;
 }
 
-export class Get2PathParam {
+export class GetPathWithRoundParam {
     @Required id: string;
-    @Required sid: string;
+    @Required @Enum('1', '2', '3', '4', '5') round: string;
 }

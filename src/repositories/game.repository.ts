@@ -2,8 +2,16 @@ import { Service } from '@ekonoo/lambdi';
 import { DynamoDB } from 'aws-sdk';
 import { Molder } from '@ekonoo/models';
 import { generateId } from '../utils/error';
-import { Game, GameState, GameStateStep, SeedAnswer, SeedSensisResult, SeedState } from '../models/game.model';
-import { GroupAnswer, GroupState } from '../models/group.model';
+import {
+    Game,
+    GameState,
+    GameStateStep,
+    GroupAnswer,
+    GroupState,
+    SeedAnswer,
+    SeedSensisResult,
+    SeedState
+} from '../models/game.model';
 
 @Service()
 export class GameRepository {
@@ -204,38 +212,4 @@ export class GameRepository {
             .promise()
             .then(res => Molder.instantiate(GroupState, res.Attributes));
     }
-
-    // async updateStateGroup(userId: string, gameId: string): Promise<GameStateGroup> {
-    //     return this.dynamo
-    //         .update({
-    //             TableName: this.TABLE,
-    //             ReturnValues: 'ALL_NEW',
-    //             Key: {
-    //                 PK: `GAME#${userId}`,
-    //                 SK: `#DETAIL#${gameId}#STATE#${GameStateStep.Group}`
-    //             },
-    //             UpdateExpression: `SET applied = applied + :inc`,
-    //             ExpressionAttributeValues: {
-    //                 ':inc': 1
-    //             }
-    //         })
-    //         .promise()
-    //         .then(res => Molder.instantiate(GameStateSeed, res.Attributes));
-    // }
-
-    // async upsertGroup(userId: string, gameId: string, groupId: string, data: GameGroup): Promise<GameGroup> {
-    //     return this.dynamo
-    //         .put({
-    //             TableName: this.TABLE,
-    //             ReturnValues: 'ALL_NEW',
-    //             Item: {
-    //                 ...data,
-    //                 id: groupId,
-    //                 PK: `GAME#${userId}`,
-    //                 SK: `#DETAIL#${gameId}#STATE#${GameStateStep.Group}#${groupId}`
-    //             }
-    //         })
-    //         .promise()
-    //         .then(res => Molder.instantiate(GameGroup, res.Attributes));
-    // }
 }
