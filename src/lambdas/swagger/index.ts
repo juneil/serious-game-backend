@@ -1,4 +1,4 @@
-import { generateHandler, Lambda, Logger } from '@ekonoo/lambdi';
+import { Cors, generateHandler, Lambda, Logger } from '@ekonoo/lambdi';
 import { S3 } from 'aws-sdk';
 import { BusinessError } from '../../utils/error';
 
@@ -6,6 +6,7 @@ import { BusinessError } from '../../utils/error';
 export class SwaggerLambda {
     constructor(private readonly s3: S3, private logger: Logger) {}
 
+    @Cors('*')
     async onHandler(): Promise<any> {
         return this.s3
             .getObject({ Key: 'swagger.json', Bucket: 'skillins-init' })
