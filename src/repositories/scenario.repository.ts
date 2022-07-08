@@ -56,14 +56,14 @@ export class ScenarioRepository {
             })
             .promise()
             .then(res => res.Items || [])
-            .then(res => res.map(r =>
-                Molder.instantiate(Scenario, r))
-                    .map(sc => sc.funds.map(f => ({
-                            ...f,
-                            nav: f.nav.indexOf(round - 1) || 0
-                        })
-                    ))
-                    .map(sc => Molder.instantiate(ScenarioFunds, sc))
+            .then(res => res
+                .map(r => Molder.instantiate(Scenario, r))
+                .map(sc => ({ ...sc, funds: sc.funds.map(f => ({
+                        ...f,
+                        nav: f.nav.indexOf(round - 1) || 0
+                    })
+                )}))
+                .map(sc => Molder.instantiate(ScenarioFunds, sc))
             );
     }
 
