@@ -12,15 +12,13 @@ export class GroupStateService extends BaseStateService<GroupState, GroupAnswer>
         super();
     }
 
-    async update(game: Game, state: GroupState, data: GroupAnswer): Promise<GameState> {
-        const step = GameStateStep.Seed;
+    async update(_: Game, state: GroupState, data: GroupAnswer): Promise<GameState> {
         return Promise.resolve(state)
-            .then(state => super.checkState(game, state, step))
+            .then(state => super.checkState(state))
             .then(() =>
                 this.gameRepository
                     .updateStateGroup(state.user_id, state.game_id as string, data)
-                    .then(state => ({ state, game }))
             )
-            .then(({ state, game }) => this.complete(game, state, step).then(() => state));
+            .then(state => this.complete(state).then(() => state));
     }
 }

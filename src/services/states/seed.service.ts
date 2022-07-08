@@ -19,14 +19,14 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
     async update(game: Game, state: SeedState, data: SeedAnswer): Promise<GameState> {
         const step = GameStateStep.Seed;
         return Promise.resolve(state)
-            .then(state => super.checkState(game, state, step))
+            .then(state => super.checkState(state, step))
             .then(() =>
                 this.gameRepository
                     .updateStateSeed(state.user_id, state.game_id as string, data)
                     .then(state => ({ state, game }))
             )
             .then(({ state, game }) =>
-                this.complete(game, state, step).then(completed =>
+                this.complete(state, step).then(completed =>
                     completed ? this.completeCompute(game, state).then(() => state) : state
                 )
             );

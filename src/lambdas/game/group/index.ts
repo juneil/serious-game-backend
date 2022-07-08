@@ -9,7 +9,7 @@ import { createErrorResponse, createResponse } from '../../../utils/response';
 @Lambda({
     providers: [GameService]
 })
-export class GameSeedLambda {
+export class GameGroupLambda {
     constructor(private game: GameService, private readonly logger: Logger) {}
 
     @Cors('*')
@@ -25,4 +25,4 @@ export class GameSeedLambda {
     }
 }
 
-export const handler = generateHandler(GameSeedLambda);
+export const handler = generateHandler(GameGroupLambda);

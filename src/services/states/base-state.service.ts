@@ -7,16 +7,16 @@ export abstract class BaseStateService<T extends GameState, U> {
     abstract type: GameStateStep;
     abstract update(game: Game, state: T, data: U): Promise<GameState>;
 
-    protected checkState(game: Game, state: T, step: GameStateStep): T {
-        if (state?.step === step && state.applied < game.nb_players) {
+    protected checkState(state: T): T {
+        if (state?.step === this.type && state.applied < state.total) {
             return state;
         }
-        throw new BusinessError(ErrorCode.E005, `State cannot be updated [${game.id}]`);
+        throw new BusinessError(ErrorCode.E005, `State cannot be updated [${state.game_id}]`);
     }
 
-    protected async complete(game: Game, state: T, step: GameStateStep): Promise<boolean> {
+    protected async complete(state: T): Promise<boolean> {
         return Promise.resolve(null)
-            .then(() => this.checkState(game, state, step))
+            .then(() => this.checkState(state))
             .then(() => false)
             .catch(() => this.gameRepository.completeState(state).then(() => true));
     }
