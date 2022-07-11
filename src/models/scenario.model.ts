@@ -75,6 +75,7 @@ export class Scenario extends PersistentEntity {
     @Required name: string;
     @Required @Item(Fund) funds: Fund[];
     @Required @Item(Rules) rules: Rules[];
+    @Required @Item(Number) risk_repartition: number[];
 }
 
 @ExtendRules(PersistentEntity)

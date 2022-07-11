@@ -85,7 +85,7 @@ export class SeedAnswer {
     @Required marketing: boolean;
     @Required backoffice: boolean;
     @Required management_fee: boolean;
-    @Required commercial: boolean;
+    @Required sales: boolean;
     @Required sensis: SeedSensis;
 }
 
@@ -101,7 +101,7 @@ export class SeedSensisResult {
     @Required marketing: number;
     @Required backoffice: number;
     @Required management_fee: number;
-    @Required commercial: number;
+    @Required sales: number;
     @Required service: number;
     @Required cost: number;
     @Required performance: number;
@@ -146,7 +146,15 @@ export class GroupState extends GameState {
  * ####################################
  */
 
+
+export class SliceItem {
+    @Required @Min(10) @Max(10) code: string;
+    @Required @Min(0) @Max(1) part: number;
+}
+
 export class RoundP1Answer {
+    @Required @Item(SliceItem) funds: SliceItem[];
+    @Required @Item(SliceItem) tg: SliceItem[];
 
 }
 
