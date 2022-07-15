@@ -309,6 +309,24 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Table
+  RawReport:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/utils/raw-report
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /raw-report/{id}
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
 
 Outputs:
   ApiId:

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Skillins Game Engine</title>
+  </head>
+  <body>
+
+
+    <script>
+        function refreshReport(data) {
+            console.log(data);
+        }
+
+        setInterval(() => {
+            fetch('https://api.skillins.io/v1/raw-report').then(res => res.json())
+        }, 2000);
+    </script>
+  </body>
+</html>

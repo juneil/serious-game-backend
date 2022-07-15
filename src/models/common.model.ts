@@ -14,6 +14,11 @@ export class GetPathParam {
     @Required id: string;
 }
 
+export class GetPath2Params {
+    @Required id1: string;
+    @Required id2: string;
+}
+
 export class GetPathWithRoundParam {
     @Required id: string;
     @Required @Enum('1', '2', '3', '4', '5') round: string;

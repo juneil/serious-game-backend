@@ -44,6 +44,10 @@ export class GameService {
         );
     }
 
+    async getById(id: string): Promise<Game | undefined> {
+        return this.gameRepository.getById(id);
+    }
+
     async getByUserId(userId: string): Promise<Game[]> {
         return this.gameRepository.getByUserId(userId);
     }
@@ -61,6 +65,10 @@ export class GameService {
                     ? (states.pop() as GameState)
                     : Promise.reject(new BusinessError(ErrorCode.E999, 'Cannot have multiple uncompleted states'))
             );
+    }
+
+    async getGameStates(game: Game): Promise<GameState[]> {
+        return this.gameRepository.getStatesByGame(game);
     }
 
     async updateState(type: GameStateStep, gameId: string, payload: unknown): Promise<GameState | undefined> {
