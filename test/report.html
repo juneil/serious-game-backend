@@ -3,18 +3,132 @@
   <head>
     <meta charset="utf-8">
     <title>Skillins Game Engine</title>
-  </head>
-  <body>
-
-
-    <script>
-        function refreshReport(data) {
-            console.log(data);
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-family: Tahoma, Geneva, sans-serif;
         }
 
-        setInterval(() => {
-            fetch('https://api.skillins.io/v1/raw-report').then(res => res.json())
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        table td {
+            padding: 15px;
+        }
+        table thead td {
+            background-color: #54585d;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #54585d;
+        }
+        table tbody td {
+            color: #636363;
+            border: 1px solid #dddfe1;
+        }
+        table tbody tr {
+            background-color: #f9fafb;
+        }
+        table tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        .title {
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #54585d;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #54585d;
+        }
+    </style>
+  </head>
+  <body style="width: 100%; height: 100%;">
+
+    <div style="
+        width: 100%;
+        height: calc(100% - 45px);
+        padding-top: 25px;
+    ">
+        <div id="container" style="
+            background-color: antiquewhite;
+            border: 1px solid black;
+            margin: auto;
+            width: calc(100% - 100px);
+            height: calc(100% - 45px);
+            padding: 20px;
+        ">
+    </div>
+
+    </div>
+
+    <script>
+
+        function printTitle(title, container) {
+            container.innerHTML += `<div class="title">${title}</div>`;
+        }
+
+        function printTable(array, container) {
+            const arr = array || [];
+            if (arr.length >= 2) {
+                const headers = arr.shift() || [];
+                const rows = arr || [];
+                let str = '<table><thead><tr>';
+                str += headers.map(h => `<td>${h}</td>`).join('');
+                str += '</tr></thead><tbody>';
+                str += rows.map(r => `<tr>${r.map(rr => `<td>${rr}</td>`).join('')}</tr>`).join('');
+                str += '</tbody></table>';
+                container.innerHTML += str;
+            }
+        }
+
+
+
+        function processState(state, container) {
+            switch (state.step) {
+                case 'SEED':
+                    printTitle('State SEED', container);
+                    printTable([
+                        ['Applied', 'Total', 'Completed'],
+                        [state.applied, state.total, state.completed]
+                    ], container);
+                    break;
+                case 'GROUP':
+                    printTitle('State GROUP', container);
+                    printTable([
+                        ['Applied', 'Total', 'Completed'],
+                        [state.applied, state.total, state.completed]
+                    ], container);
+            }
+        }
+
+        function refreshReport(data) {
+            const container = document.getElementById('container');
+            container.innerHTML = '';
+            const game = data.game;
+            const states = data.states.reverse();
+
+            printTitle('Game Info', container);
+            printTable([
+                ['Id', 'Name', 'Nb Players', 'Nb Teams', 'Nb Rounds', 'Round duration'],
+                [game.id, game.denomination, game.nb_players, game.nb_teams, game.nb_rounds, game.round_duration]
+            ], container);
+
+
+            states.forEach(state => processState(state, container));
+        }
+
+        setTimeout(() => {
+            fetch('https://api.skillins.io/v1/raw-report/DJ21RSX')
+                .then(res => res.json())
+                .then(res => refreshReport(res))
         }, 2000);
     </script>
   </body>
 </html>
+

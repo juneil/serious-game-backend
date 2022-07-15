@@ -67,8 +67,8 @@ export class GameService {
             );
     }
 
-    async getGameStates(game: Game): Promise<GameState[]> {
-        return this.gameRepository.getStatesByGame(game);
+    async getGameStates(game: Game, strict = true): Promise<GameState[]> {
+        return this.gameRepository.getStatesByGame(game, strict);
     }
 
     async updateState(type: GameStateStep, gameId: string, payload: unknown): Promise<GameState | undefined> {

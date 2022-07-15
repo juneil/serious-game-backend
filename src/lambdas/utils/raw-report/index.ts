@@ -17,7 +17,7 @@ export class RawReportLambda {
             return this.game
                 .getById(data.id)
                 .then(game => game
-                    ? this.game.getGameStates(game).then(states => ({ game, states }))
+                    ? this.game.getGameStates(game, false).then(states => ({ game, states }))
                     : {}
                 )
                 .then(res => createResponse(res))

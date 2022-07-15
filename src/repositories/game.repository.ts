@@ -103,7 +103,7 @@ export class GameRepository {
             .then(() => Molder.instantiate(GameState, formatedData));
     }
 
-    async getStatesByGame(game: Game): Promise<GameState[]> {
+    async getStatesByGame(game: Game, strict = true): Promise<GameState[]> {
         return this.dynamo
             .query({
                 TableName: this.TABLE,
@@ -115,7 +115,10 @@ export class GameRepository {
             })
             .promise()
             .then(res => res.Items || [])
-            .then(res => res.map(r => Molder.instantiate(GameState, r)));
+            .then(res => res.map(r => strict
+                ? Molder.instantiate(GameState, r)
+                : ({ ...r, PK: undefined, SK: undefined } as any)
+            ));
     }
 
     async completeState(state: GameState): Promise<GameState> {
