@@ -63,7 +63,12 @@ export class GameService {
             .then(states =>
                 states.length === 1
                     ? (states.pop() as GameState)
-                    : Promise.reject(new BusinessError(ErrorCode.E999, 'Cannot have multiple uncompleted states'))
+                    : Promise.reject(
+                          new BusinessError(
+                              ErrorCode.E999,
+                              'Cannot have multiple uncompleted states'
+                          )
+                      )
             );
     }
 
@@ -71,10 +76,16 @@ export class GameService {
         return this.gameRepository.getStatesByGame(game, strict);
     }
 
-    async updateState(type: GameStateStep, gameId: string, payload: unknown): Promise<GameState | undefined> {
+    async updateState(
+        type: GameStateStep,
+        gameId: string,
+        payload: unknown
+    ): Promise<GameState | undefined> {
         return this.gameRepository
             .getById(gameId)
-            .then(game => game || Promise.reject(new BusinessError(ErrorCode.E004, 'Game not found')))
+            .then(
+                game => game || Promise.reject(new BusinessError(ErrorCode.E004, 'Game not found'))
+            )
             .then(game => this.getGameState(game).then(state => ({ game, state })))
             .then(({ game, state }) => this.getServiceByType(type).update(game, state, payload));
     }

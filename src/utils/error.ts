@@ -61,7 +61,9 @@ export class BusinessError extends Error {
     readonly http_code: number;
 
     static wrap(err: Error | BusinessError): BusinessError {
-        return err instanceof BusinessError ? err : new BusinessError(ErrorCode.E999, err.message, err.stack);
+        return err instanceof BusinessError
+            ? err
+            : new BusinessError(ErrorCode.E999, err.message, err.stack);
     }
 
     constructor(errCode: ErrorCode, logMessage: string, stack?: Error['stack']) {

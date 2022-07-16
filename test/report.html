@@ -38,13 +38,11 @@
         }
 
         .title {
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: #54585d;
-            color: #ffffff;
+            padding: 25px;
+            margin-bottom: 25px;
             font-weight: bold;
             font-size: 13px;
-            border: 1px solid #54585d;
+            border-bottom: 1px solid #54585d;
         }
     </style>
   </head>
@@ -62,6 +60,7 @@
             width: calc(100% - 100px);
             height: calc(100% - 45px);
             padding: 20px;
+            overflow: auto;
         ">
     </div>
 
@@ -97,6 +96,16 @@
                         ['Applied', 'Total', 'Completed'],
                         [state.applied, state.total, state.completed]
                     ], container);
+                    if (state.completed) {
+                        printTable([
+                            state.region_indexes.map((_, i) => `Region ${i+1}`),
+                            state.region_indexes
+                        ], container);
+                        printTable([
+                            Object.keys(state.sensis),
+                            Object.values(state.sensis)
+                        ], container);
+                    }
                     break;
                 case 'GROUP':
                     printTitle('State GROUP', container);

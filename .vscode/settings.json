@@ -1,7 +1,7 @@
 {
     "editor.rulers": [120],
     "editor.codeActionsOnSave": {
-        "source.fixAll": false,
+        "source.fixAll": true,
         "source.fixAll.eslint": true
     },
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
@@ -9,7 +9,6 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "editor.formatOnSave": true,
-    "prettier.requireConfig": false,
     "json.schemas": [
         {
             "fileMatch": [
@@ -18,5 +17,8 @@
             ],
             "url": "/node_modules/@ekonoo/ekonoo-testing/jsonSchema.json"
         }
-    ]
+    ],
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

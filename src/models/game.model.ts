@@ -131,6 +131,7 @@ export class GroupPlayer {
 }
 
 export class GroupAnswer {
+    @Required id: string;
     @Required @Min(2) @Max(100) name: string;
     @Required @Item(GroupPlayer) players: GroupPlayer[];
 }
@@ -146,7 +147,6 @@ export class GroupState extends GameState {
  * ####################################
  */
 
-
 export class SliceItem {
     @Required @Min(10) @Max(10) code: string;
     @Required @Min(0) @Max(1) part: number;
@@ -155,10 +155,9 @@ export class SliceItem {
 export class RoundP1Answer {
     @Required @Item(SliceItem) funds: SliceItem[];
     @Required @Item(SliceItem) tg: SliceItem[];
-
 }
 
- @ExtendRules(GameState)
- export class RoundP1State extends GameState {
-     @Required @Item(SeedAnswer) answers: SeedAnswer[];
- }
+@ExtendRules(GameState)
+export class RoundP1State extends GameState {
+    @Required @Item(SeedAnswer) answers: SeedAnswer[];
+}

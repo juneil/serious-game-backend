@@ -90,9 +90,9 @@ export class ScenarioFunds extends PersistentEntity {
 }
 
 export class ListScenarioResponse {
-    @Required @Item(ScenarioLight) list: ScenarioLight[]
+    @Required @Item(ScenarioLight) list: ScenarioLight[];
 }
 
 export class ListScenarioFundsResponse {
-    @Required @Item(ScenarioFunds) list: ScenarioFunds[]
+    @Required @Item(ScenarioFunds) list: ScenarioFunds[];
 }

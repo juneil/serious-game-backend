@@ -4,7 +4,6 @@ import { ScenarioFunds, ScenarioLight } from '../models/scenario.model';
 
 @Service({ providers: [ScenarioRepository] })
 export class ScenarioService {
-
     constructor(private scenarioRepository: ScenarioRepository) {}
 
     async getAllNames(): Promise<ScenarioLight[]> {

@@ -51,7 +51,11 @@ export class GameRepository {
             })
             .promise()
             .then(res => res.Items || [])
-            .then(res => res.filter(r => !(r.SK as string).includes('STATE')).map(r => Molder.instantiate(Game, r)));
+            .then(res =>
+                res
+                    .filter(r => !(r.SK as string).includes('STATE'))
+                    .map(r => Molder.instantiate(Game, r))
+            );
     }
 
     async getByUserIdAndId(userId: string, id: string): Promise<Game | undefined> {
@@ -115,10 +119,14 @@ export class GameRepository {
             })
             .promise()
             .then(res => res.Items || [])
-            .then(res => res.map(r => strict
-                ? Molder.instantiate(GameState, r)
-                : ({ ...r, PK: undefined, SK: undefined } as any)
-            ));
+            .then(res =>
+                res.map(r =>
+                    strict
+                        ? Molder.instantiate(GameState, r)
+                        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          ({ ...r, PK: undefined, SK: undefined } as any)
+                )
+            );
     }
 
     async completeState(state: GameState): Promise<GameState> {
@@ -159,7 +167,11 @@ export class GameRepository {
             .then(res => Molder.instantiate(SeedState, res.Attributes));
     }
 
-    async completeStateSeed(state: SeedState, data: SeedSensisResult, regionIndexes: number[]): Promise<SeedState> {
+    async completeStateSeed(
+        state: SeedState,
+        data: SeedSensisResult,
+        regionIndexes: number[]
+    ): Promise<SeedState> {
         return this.dynamo
             .update({
                 TableName: this.TABLE,
@@ -178,7 +190,12 @@ export class GameRepository {
             .then(res => Molder.instantiate(SeedState, res.Attributes));
     }
 
-    async createSeed(state: SeedState, round: number, data: any[], date = Date.now()): Promise<any[]> {
+    async createSeed(
+        state: SeedState,
+        round: number,
+        data: unknown[],
+        date = Date.now()
+    ): Promise<unknown[]> {
         const formatedData = {
             data,
             PK: `GAME#${state.user_id}`,
@@ -196,7 +213,11 @@ export class GameRepository {
             .then(() => data);
     }
 
-    async updateStateGroup(userId: string, gameId: string, answers: GroupAnswer): Promise<GroupState> {
+    async updateStateGroup(
+        userId: string,
+        gameId: string,
+        answers: GroupAnswer
+    ): Promise<GroupState> {
         return this.dynamo
             .update({
                 TableName: this.TABLE,

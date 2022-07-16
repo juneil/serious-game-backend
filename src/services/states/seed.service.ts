@@ -1,8 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Service } from '@ekonoo/lambdi';
-import { Game, GameState, GameStateStep, SeedAnswer, SeedSensisResult, SeedState } from '../../models/game.model';
+import {
+    Game,
+    GameState,
+    GameStateStep,
+    SeedAnswer,
+    SeedSensisResult,
+    SeedState
+} from '../../models/game.model';
 import { GameRepository } from '../../repositories/game.repository';
 import { BaseStateService } from './base-state.service';
 import * as MathJS from 'mathjs';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const Vega = require('vega-statistics');
 
 @Service({ providers: [GameRepository] })
@@ -10,7 +19,7 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
     public type = GameStateStep.Seed;
     private size: 10000;
     private baseAmount = 5000;
-    private ageStd: any;
+    private ageStd: unknown;
 
     constructor(protected gameRepository: GameRepository) {
         super();
@@ -41,7 +50,9 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
                     (a, c) =>
                         Object.entries(c)
                             .filter(([_, v]) => v !== undefined)
-                            .map(([k, v]) => ({ [k]: convertVal((a as any)[k] || 0) + convertVal(v as boolean) }))
+                            .map(([k, v]) => ({
+                                [k]: convertVal((a as any)[k] || 0) + convertVal(v as boolean)
+                            }))
                             .reduce((a, c) => ({ ...a, ...c })),
                     {} as any
                 )
@@ -62,17 +73,19 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
                 } as SeedSensisResult,
                 this.getRegionIndexes()
             )
-            .then(state => Promise.all([
-                this.generate(state, 1),
-                this.gameRepository.createState({
-                    step: GameStateStep.Group,
-                    game_id: state.game_id,
-                    user_id: state.user_id,
-                    applied: 0,
-                    total: game.nb_teams,
-                    completed: false
-                })
-            ]))
+            .then(state =>
+                Promise.all([
+                    this.generate(state, 1),
+                    this.gameRepository.createState({
+                        step: GameStateStep.Group,
+                        game_id: state.game_id,
+                        user_id: state.user_id,
+                        applied: 0,
+                        total: game.nb_teams,
+                        completed: false
+                    })
+                ])
+            )
             .then(() => undefined);
     }
 
@@ -96,7 +109,12 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
             .map(age => this.computeAmount(age))
             .map(item => [...item, 0.01])
             .map(item => [...item, MathJS.random(0, 1)])
-            .map(([age, amount, out, r]) => [age, amount, out, this.computeRegion(state.region_indexes, r)]);
+            .map(([age, amount, out, r]) => [
+                age,
+                amount,
+                out,
+                this.computeRegion(state.region_indexes, r)
+            ]);
         return this.gameRepository.createSeed(state, round, arr);
     }
 
@@ -117,7 +135,12 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
             }) || 0;
         return [
             age,
-            Math.round(Vega.randomNormal((1 + rate[categories.indexOf(value)]) * this.baseAmount, 500).sample())
+            Math.round(
+                Vega.randomNormal(
+                    (1 + rate[categories.indexOf(value)]) * this.baseAmount,
+                    500
+                ).sample()
+            )
         ];
     }
 

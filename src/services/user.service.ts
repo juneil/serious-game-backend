@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Service } from '@ekonoo/lambdi';
 import { User } from '../models/user.model';
 import { UserRepository } from '../repositories/user.repository';
@@ -23,7 +24,9 @@ export class UserService {
     async login(email: string, password: string): Promise<LoginResponse> {
         return this.getByEmail(email)
             .then(user =>
-                user ? user : Promise.reject(new BusinessError(ErrorCode.E001, `User not found [${email}]`))
+                user
+                    ? user
+                    : Promise.reject(new BusinessError(ErrorCode.E001, `User not found [${email}]`))
             )
             .then(user =>
                 user.password === this.hashPassword(password)
@@ -36,7 +39,9 @@ export class UserService {
     async verify(token: string): Promise<User> {
         return Promise.resolve(token)
             .then(t => JWT.verify(t, this.SECRET))
-            .catch(err => Promise.reject(new BusinessError(ErrorCode.E003, 'Invalid JWT ' + err.message)))
+            .catch(err =>
+                Promise.reject(new BusinessError(ErrorCode.E003, 'Invalid JWT ' + err.message))
+            )
             .then(decoded =>
                 this.userRepository
                     .getByEmail((decoded as any).email)
@@ -44,14 +49,21 @@ export class UserService {
                         user
                             ? user
                             : Promise.reject(
-                                  new BusinessError(ErrorCode.E003, `User not found [${(decoded as any).email}]`)
+                                  new BusinessError(
+                                      ErrorCode.E003,
+                                      `User not found [${(decoded as any).email}]`
+                                  )
                               )
                     )
             );
     }
 
     private generateToken(user: User): string {
-        return JWT.sign({ email: user.email }, this.SECRET, { expiresIn: '30d', issuer: 'skillins', audience: 'skillins' });
+        return JWT.sign({ email: user.email }, this.SECRET, {
+            expiresIn: '30d',
+            issuer: 'skillins',
+            audience: 'skillins'
+        });
     }
 
     private hashPassword(password: string): string {

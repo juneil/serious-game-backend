@@ -8,7 +8,10 @@ export function createResponse<T>(body: T): APIGatewayProxyResponse<T> {
     };
 }
 
-export function createErrorResponse(error: Error, logger: Logger): APIGatewayProxyResponse<BusinessErrorResponse> {
+export function createErrorResponse(
+    error: Error,
+    logger: Logger
+): APIGatewayProxyResponse<BusinessErrorResponse> {
     const e = BusinessError.wrap(error);
     logger.error(e);
     return { statusCode: e.http_code, body: e.toResponse() };
