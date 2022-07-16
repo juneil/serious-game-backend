@@ -3,6 +3,7 @@ import { Provider } from 'lambdi';
 import { Game, GameState, GameStateStep } from '../models/game.model';
 import { GameRepository } from '../repositories/game.repository';
 import { BusinessError, ErrorCode } from '../utils/error';
+import { CompanyService } from './company.service';
 import { BaseStateService } from './states/base-state.service';
 import { GroupStateService } from './states/group.service';
 import { SeedStateService } from './states/seed.service';
@@ -19,7 +20,8 @@ const STATES = [SeedStateService, GroupStateService];
                     multi: true
                 } as Provider & { multi: boolean })
         ),
-        GameRepository
+        GameRepository,
+        CompanyService
     ]
 })
 export class GameService {
