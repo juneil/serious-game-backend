@@ -16,7 +16,12 @@ export class GroupStateService extends BaseStateService<GroupState, GroupAnswer>
         return Promise.resolve(state)
             .then(state => super.checkState(state))
             .then(() =>
-                this.gameRepository.updateStateGroup(state.user_id, state.game_id as string, data)
+                this.gameRepository.updateState(
+                    state.user_id,
+                    state.game_id as string,
+                    data,
+                    GroupState
+                )
             )
             .then(state =>
                 this.complete(state).then(res =>

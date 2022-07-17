@@ -80,8 +80,8 @@ export class SeedAnswer {
     @Required tg_rate: boolean;
     @Required commission: boolean;
     @Required entry_fee: boolean;
-    @Required garantee: boolean;
-    @Required garantee_fee: boolean;
+    @Required guarantee: boolean;
+    @Required guarantee_fee: boolean;
     @Required marketing: boolean;
     @Required backoffice: boolean;
     @Required management_fee: boolean;
@@ -96,8 +96,8 @@ export class SeedSensisResult {
     @Required tg_rate: number;
     @Required commission: number;
     @Required entry_fee: number;
-    @Required garantee: number;
-    @Required garantee_fee: number;
+    @Required guarantee: number;
+    @Required guarantee_fee: number;
     @Required marketing: number;
     @Required backoffice: number;
     @Required management_fee: number;
@@ -153,11 +153,27 @@ export class SliceItem {
 }
 
 export class RoundP1Answer {
-    @Required @Item(SliceItem) funds: SliceItem[];
-    @Required @Item(SliceItem) tg: SliceItem[];
+    @Required uc: boolean;
+    @Required tg: boolean;
+    @Required @Item(SliceItem) low_funds: SliceItem[];
+    @Required @Item(SliceItem) moderate_funds: SliceItem[];
+    @Required @Item(SliceItem) high_funds: SliceItem[];
+    @Required @Item(SliceItem) tg_funds: SliceItem[];
+    @Required @Min(0) @Max(0.05) tg_rate: number;
+    @Required @Min(0) @Max(0.05) management_fee_uc: number;
+    @Required @Min(0) @Max(0.05) management_fee_tg: number;
+    @Required @Min(0) @Max(0.05) entry_fee: number;
+    @Required @Min(0) @Max(0.05) commission: number;
+    @Required guarantee: boolean;
+    @Required @Min(0) @Max(0.05) guarantee_fee: number;
+    @Required @Min(0) @Max(99) legal: number;
+    @Required @Min(0) @Max(99) backoffice: number;
+    @Required @Min(0) @Max(99) marketing: number;
+    @Required @Min(0) @Max(99) digital: number;
+    @Required @Item(Number) @Min(7) @Max(7) sales: number[];
 }
 
 @ExtendRules(GameState)
 export class RoundP1State extends GameState {
-    @Required @Item(SeedAnswer) answers: SeedAnswer[];
+    @Required @Item(RoundP1Answer) answers: RoundP1Answer[];
 }

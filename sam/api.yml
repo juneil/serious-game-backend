@@ -273,6 +273,24 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref Table
+  GameRoundP1:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../dist/game/round-p1
+      Handler: index.handler
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        Resource:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /game/{id}/p1
+            Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
   ScenarioList:
     Type: AWS::Serverless::Function
     Properties:

@@ -147,7 +147,12 @@ export class GameRepository {
             .then(res => res.Attributes as GameState);
     }
 
-    async updateStateSeed(userId: string, gameId: string, answers: SeedAnswer): Promise<SeedState> {
+    async updateState<T extends GameState>(
+        userId: string,
+        gameId: string,
+        answers: unknown,
+        token: new () => T
+    ): Promise<T> {
         return this.dynamo
             .update({
                 TableName: this.TABLE,
@@ -164,7 +169,7 @@ export class GameRepository {
                 }
             })
             .promise()
-            .then(res => Molder.instantiate(SeedState, res.Attributes));
+            .then(res => Molder.instantiate(token, res.Attributes));
     }
 
     async completeStateSeed(
@@ -211,29 +216,5 @@ export class GameRepository {
             })
             .promise()
             .then(() => data);
-    }
-
-    async updateStateGroup(
-        userId: string,
-        gameId: string,
-        answers: GroupAnswer
-    ): Promise<GroupState> {
-        return this.dynamo
-            .update({
-                TableName: this.TABLE,
-                ReturnValues: 'ALL_NEW',
-                Key: {
-                    PK: `GAME#${userId}`,
-                    SK: `#DETAIL#${gameId}#STATE#${GameStateStep.Group}`
-                },
-                UpdateExpression: `SET applied = applied + :inc, answers = list_append(if_not_exists(answers, :empty_list), :values)`,
-                ExpressionAttributeValues: {
-                    ':inc': 1,
-                    ':empty_list': [],
-                    ':values': [answers]
-                }
-            })
-            .promise()
-            .then(res => Molder.instantiate(GroupState, res.Attributes));
     }
 }

@@ -6,9 +6,10 @@ import { BusinessError, ErrorCode } from '../utils/error';
 import { CompanyService } from './company.service';
 import { BaseStateService } from './states/base-state.service';
 import { GroupStateService } from './states/group.service';
+import { RoundPart1StateService } from './states/part1.service';
 import { SeedStateService } from './states/seed.service';
 
-const STATES = [SeedStateService, GroupStateService];
+const STATES = [SeedStateService, GroupStateService, RoundPart1StateService];
 
 @Service({
     providers: [
