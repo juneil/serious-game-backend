@@ -21,7 +21,7 @@ export class UserService {
         return this.userRepository.getByEmail(email);
     }
 
-    async login(email: string, password: string): Promise<LoginResponse> {
+    async login(email: string, password: string, companyId?: string): Promise<LoginResponse> {
         return this.getByEmail(email)
             .then(user =>
                 user
@@ -33,7 +33,7 @@ export class UserService {
                     ? user
                     : Promise.reject(new BusinessError(ErrorCode.E001, `Wrong password [${email}]`))
             )
-            .then(user => ({ user, token: this.generateToken(user) }));
+            .then(user => ({ user, token: this.generateToken(user, companyId) }));
     }
 
     async verify(token: string): Promise<User> {
@@ -58,8 +58,8 @@ export class UserService {
             );
     }
 
-    private generateToken(user: User): string {
-        return JWT.sign({ email: user.email }, this.SECRET, {
+    private generateToken(user: User, companyId?: string): string {
+        return JWT.sign({ email: user.email, company_id: companyId }, this.SECRET, {
             expiresIn: '30d',
             issuer: 'skillins',
             audience: 'skillins'
