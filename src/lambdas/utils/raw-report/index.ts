@@ -7,15 +7,20 @@ import {
     PathParams
 } from '@ekonoo/lambdi';
 import { GetPathParam } from '../../../models/common.model';
+import { CompanyService } from '../../../services/company.service';
 import { GameService } from '../../../services/game.service';
 import { BusinessErrorResponse } from '../../../utils/error';
 import { createErrorResponse, createResponse } from '../../../utils/response';
 
 @Lambda({
-    providers: [GameService]
+    providers: [GameService, CompanyService]
 })
 export class RawReportLambda {
-    constructor(private readonly game: GameService, private logger: Logger) {}
+    constructor(
+        private readonly game: GameService,
+        private company: CompanyService,
+        private logger: Logger
+    ) {}
 
     @Cors('*')
     async onHandler(
@@ -28,11 +33,12 @@ export class RawReportLambda {
                     ? this.game
                           .getGameStates(game, false)
                           .then(states =>
-                              this.game
-                                  .getSeedByRound(states[0], 1)
-                                  .then(seed => ({ game, states, seed }))
+                              Promise.all([
+                                  this.company.getByGame(game),
+                                  this.game.getSeedByRound(states[0], 1)
+                              ]).then(([companies, seed]) => ({ game, states, seed, companies }))
                           )
-                    : {}
+                    : ({} as unknown)
             )
             .then(res => createResponse(res))
             .catch(err => createErrorResponse(err, this.logger));

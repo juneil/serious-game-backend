@@ -17,7 +17,7 @@ const Vega = require('vega-statistics');
 @Service({ providers: [GameRepository] })
 export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
     public type = GameStateStep.Seed;
-    private size: 10000;
+    private seedSize: 10000;
     private baseAmount = 5000;
     private ageStd: unknown;
 
@@ -104,7 +104,7 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
     }
 
     async generate(state: SeedState, round: number): Promise<any[]> {
-        const arr = new Array(this.size)
+        const arr = new Array(this.seedSize)
             .fill(null)
             .map(() => this.computeAge(state.sensis?.age || 0))
             .map(age => this.computeAmount(age))

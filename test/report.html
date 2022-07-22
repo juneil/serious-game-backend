@@ -48,6 +48,11 @@
   </head>
   <body style="width: 100%; height: 100%;">
 
+    <div style="position: absolute; width: 100%; height: 50px; text-align: center;">
+        <button type="button" onclick="viewStates()">States</button>
+        <button type="button" onclick="viewSeed()">Seed</button>
+    </div>
+
     <div style="
         width: 100%;
         height: calc(100% - 45px);
@@ -66,7 +71,20 @@
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+
+        var VIEW = 'states';
+        var RAWDATA = undefined;
+
+        function viewSeed() {
+            VIEW = 'seed';
+            refreshReport(RAWDATA);
+        }
+        function viewStates() {
+            VIEW = 'states';
+            refreshReport(RAWDATA);
+        }
 
         function printTitle(title, container) {
             container.innerHTML += `<div class="title">${title}</div>`;
@@ -86,7 +104,32 @@
             }
         }
 
-
+        function printPie(data, container) {
+            container.innerHTML += `<div style="width: 400px; height: 500px; margin: auto;"><canvas id="pieChart"></canvas></div>`;
+            setTimeout(() => {
+                const myChart = new Chart(
+                document.getElementById('pieChart'),
+                {
+                    type: 'pie',
+                    data: {
+                        labels: ['Region 1', 'Region 2', 'Region 3', 'Region 4', 'Region 5', 'Region 6', 'Region 7'],
+                        datasets: [{
+                            backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)',
+                            'green',
+                            'pink',
+                            'grey',
+                            'brown'
+                            ],
+                            data: data,
+                        }]
+                    }
+                }
+            );
+            }, 500);
+        }
 
         function processState(state, container) {
             switch (state.step) {
@@ -117,23 +160,47 @@
         }
 
         function refreshReport(data) {
+            RAWDATA = data;
             const container = document.getElementById('container');
             container.innerHTML = '';
             const game = data.game;
             const states = data.states.reverse();
+            const seed = data.seed;
 
-            printTitle('Game Info', container);
-            printTable([
-                ['Id', 'Name', 'Nb Players', 'Nb Teams', 'Nb Rounds', 'Round duration'],
-                [game.id, game.denomination, game.nb_players, game.nb_teams, game.nb_rounds, game.round_duration]
-            ], container);
+            if (VIEW === 'states') {
+                printTitle('Game Info', container);
+                printTable([
+                    ['Id', 'Name', 'Nb Players', 'Nb Teams', 'Nb Rounds', 'Round duration'],
+                    [game.id, game.denomination, game.nb_players, game.nb_teams, game.nb_rounds, game.round_duration]
+                ], container);
 
+                states.forEach(state => processState(state, container));
+            }
 
-            states.forEach(state => processState(state, container));
+            if (VIEW === 'seed') {
+                printTitle('Seed data', container);
+                printTable([
+                    ['Age mean', 'Amount sum'],
+                    [seed.map(s => s[0]).reduce((a, c) => a + c, 0) / seed.length, seed.map(s => s[1]).reduce((a, c) => a + c, 0) + ' EUR']
+                ], container);
+                printPie([
+                    seed.filter(s => s[3] === 1).length,
+                    seed.filter(s => s[3] === 2).length,
+                    seed.filter(s => s[3] === 3).length,
+                    seed.filter(s => s[3] === 4).length,
+                    seed.filter(s => s[3] === 5).length,
+                    seed.filter(s => s[3] === 6).length,
+                    seed.filter(s => s[3] === 7).length
+                ], container);
+                printTable([
+                    ['Age', 'Amount', 'Death probabilty', 'Region'],
+                    ...seed
+                ], container);
+            }
         }
 
         setTimeout(() => {
-            fetch('https://api.skillins.io/v1/raw-report/VX8ASSF')
+            fetch('https://api.skillins.io/v1/raw-report/8FG2PIN')
                 .then(res => res.json())
                 .then(res => refreshReport(res))
         }, 2000);
