@@ -50,6 +50,7 @@
 
     <div style="position: absolute; width: 100%; height: 50px; text-align: center;">
         <button type="button" onclick="viewStates()">States</button>
+        <button type="button" onclick="viewCompanies()">Companies</button>
         <button type="button" onclick="viewSeed()">Seed</button>
     </div>
 
@@ -79,6 +80,10 @@
 
         function viewSeed() {
             VIEW = 'seed';
+            refreshReport(RAWDATA);
+        }
+        function viewCompanies() {
+            VIEW = 'companies';
             refreshReport(RAWDATA);
         }
         function viewStates() {
@@ -196,6 +201,10 @@
                     ['Age', 'Amount', 'Death probabilty', 'Region'],
                     ...seed
                 ], container);
+            }
+
+            if (VIEW === 'companies') {
+
             }
         }
 

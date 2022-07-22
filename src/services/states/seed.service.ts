@@ -30,7 +30,7 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
             .then(state => super.checkState(state))
             .then(() =>
                 this.gameRepository
-                    .updateState(state.user_id, state.game_id as string, data, SeedState)
+                    .updateState(state.user_id, state.game_id as string, this.type, data, SeedState)
                     .then(state => ({ state, game }))
             )
             .then(({ state, game }) =>

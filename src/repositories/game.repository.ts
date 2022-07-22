@@ -150,6 +150,7 @@ export class GameRepository {
     async updateState<T extends GameState>(
         userId: string,
         gameId: string,
+        step: GameStateStep,
         answers: unknown,
         token: new () => T
     ): Promise<T> {
@@ -159,7 +160,7 @@ export class GameRepository {
                 ReturnValues: 'ALL_NEW',
                 Key: {
                     PK: `GAME#${userId}`,
-                    SK: `#DETAIL#${gameId}#STATE#${GameStateStep.Seed}`
+                    SK: `#DETAIL#${gameId}#STATE#${step}`
                 },
                 UpdateExpression: `SET applied = applied + :inc, answers = list_append(if_not_exists(answers, :empty_list), :values)`,
                 ExpressionAttributeValues: {

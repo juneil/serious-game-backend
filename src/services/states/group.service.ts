@@ -19,6 +19,7 @@ export class GroupStateService extends BaseStateService<GroupState, GroupAnswer>
                 this.gameRepository.updateState(
                     state.user_id,
                     state.game_id as string,
+                    this.type,
                     data,
                     GroupState
                 )
