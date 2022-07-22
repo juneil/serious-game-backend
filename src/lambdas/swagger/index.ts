@@ -7,7 +7,7 @@ export class SwaggerLambda {
     constructor(private readonly s3: S3, private logger: Logger) {}
 
     @Cors('*')
-    async onHandler(): Promise<any> {
+    async onHandler(): Promise<unknown> {
         return this.s3
             .getObject({ Key: 'swagger.json', Bucket: 'skillins-init' })
             .promise()

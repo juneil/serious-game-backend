@@ -19,7 +19,11 @@ import { createErrorResponse, createResponse } from '../../../utils/response';
     providers: [UserService, GameService]
 })
 export class GameStateLambda {
-    constructor(private readonly user: UserService, private game: GameService, private readonly logger: Logger) {}
+    constructor(
+        private readonly user: UserService,
+        private game: GameService,
+        private readonly logger: Logger
+    ) {}
 
     @Cors('*')
     @ApiResponse(GameState)
@@ -30,7 +34,13 @@ export class GameStateLambda {
         return this.user
             .verify(headers.Authorization)
             .then(user => this.game.getByUserIdAndId(user.id as string, path.id))
-            .then(game => game || Promise.reject(new BusinessError(ErrorCode.E004, `Game not found [${path.id}]`)))
+            .then(
+                game =>
+                    game ||
+                    Promise.reject(
+                        new BusinessError(ErrorCode.GameNotFound, `Game not found [${path.id}]`)
+                    )
+            )
             .then(game => this.game.getGameState(game))
             .then(res => createResponse(res))
             .catch(err => createErrorResponse(err, this.logger));
