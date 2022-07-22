@@ -196,13 +196,13 @@ export class GameRepository {
     }
 
     async createSeed(
-        state: SeedState,
+        state: GameState,
         round: number,
         data: unknown[],
         date = Date.now()
     ): Promise<unknown[]> {
         const formatedData = {
-            data,
+            data: JSON.stringify(data),
             PK: `GAME#${state.user_id}`,
             SK: `#DETAIL#${state.game_id}#ROUND#${round}#SEED`,
             updated_date: date,
@@ -216,5 +216,20 @@ export class GameRepository {
             })
             .promise()
             .then(() => data);
+    }
+
+    async getSeed(state: GameState, round: number): Promise<unknown[]> {
+        return this.dynamo
+            .query({
+                TableName: this.TABLE,
+                KeyConditionExpression: `PK = :pk AND begins_with(SK, :sk)`,
+                ExpressionAttributeValues: {
+                    ':pk': `GAME#${state.user_id}`,
+                    ':sk': `#DETAIL#${state.game_id}#ROUND#${round}#SEED`
+                }
+            })
+            .promise()
+            .then(res => (res.Items || []).pop())
+            .then(res => (res ? JSON.parse(res.data) : []));
     }
 }

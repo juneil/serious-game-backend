@@ -26,12 +26,16 @@ export class UserService {
             .then(user =>
                 user
                     ? user
-                    : Promise.reject(new BusinessError(ErrorCode.E001, `User not found [${email}]`))
+                    : Promise.reject(
+                          new BusinessError(ErrorCode.LoginFailed, `User not found [${email}]`)
+                      )
             )
             .then(user =>
                 user.password === this.hashPassword(password)
                     ? user
-                    : Promise.reject(new BusinessError(ErrorCode.E001, `Wrong password [${email}]`))
+                    : Promise.reject(
+                          new BusinessError(ErrorCode.LoginFailed, `Wrong password [${email}]`)
+                      )
             )
             .then(user => ({ user, token: this.generateToken(user, companyId) }));
     }
@@ -40,7 +44,7 @@ export class UserService {
         return Promise.resolve(token)
             .then(t => JWT.verify(t, this.SECRET))
             .catch(err =>
-                Promise.reject(new BusinessError(ErrorCode.E003, 'Invalid JWT ' + err.message))
+                Promise.reject(new BusinessError(ErrorCode.Forbidden, 'Invalid JWT ' + err.message))
             )
             .then(decoded =>
                 this.userRepository
@@ -50,7 +54,7 @@ export class UserService {
                             ? user
                             : Promise.reject(
                                   new BusinessError(
-                                      ErrorCode.E003,
+                                      ErrorCode.Forbidden,
                                       `User not found [${(decoded as any).email}]`
                                   )
                               )

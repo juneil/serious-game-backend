@@ -24,7 +24,15 @@ export class RawReportLambda {
         return this.game
             .getById(data.id)
             .then(game =>
-                game ? this.game.getGameStates(game, false).then(states => ({ game, states })) : {}
+                game
+                    ? this.game
+                          .getGameStates(game, false)
+                          .then(states =>
+                              this.game
+                                  .getSeedByRound(states[0], 1)
+                                  .then(seed => ({ game, states, seed }))
+                          )
+                    : {}
             )
             .then(res => createResponse(res))
             .catch(err => createErrorResponse(err, this.logger));

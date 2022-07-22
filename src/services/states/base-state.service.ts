@@ -11,7 +11,10 @@ export abstract class BaseStateService<T extends GameState, U> {
         if (state?.step === this.type && state.applied < state.total) {
             return state;
         }
-        throw new BusinessError(ErrorCode.E005, `State cannot be updated [${state.game_id}]`);
+        throw new BusinessError(
+            ErrorCode.ResourceNotAvailable,
+            `State cannot be updated [${state.game_id}]`
+        );
     }
 
     protected async complete(state: GameState): Promise<boolean> {

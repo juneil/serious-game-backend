@@ -99,7 +99,8 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
                     sum => (value: number) =>
                         (sum += value)
                 )(0)
-            );
+            )
+            .map(val => Math.round(val * 10000) / 10000);
     }
 
     async generate(state: SeedState, round: number): Promise<any[]> {

@@ -9,42 +9,42 @@ export class ErrorCode {
     http: number;
     message: string;
 
-    static E001 = {
+    static LoginFailed = {
         http: 400,
         message: 'Login failed'
     };
 
-    static E002 = {
+    static GameNotFound = {
         http: 400,
-        message: 'Space not found'
+        message: 'Game not found'
     };
 
-    static E003 = {
+    static Forbidden = {
         http: 403,
         message: 'Forbidden'
     };
 
-    static E004 = {
+    static ResourceNotFound = {
         http: 404,
         message: 'Resource not found'
     };
 
-    static E005 = {
+    static ResourceNotAvailable = {
         http: 410,
         message: 'Resource not available'
     };
 
-    static E006 = {
+    static BadRequest = {
         http: 400,
         message: 'Bad Request'
     };
 
-    static E007 = {
+    static UnrecognizedState = {
         http: 500,
         message: 'Unrecognized state'
     };
 
-    static E999 = {
+    static InternalServerError = {
         http: 500,
         message: 'Internal Server Error'
     };
@@ -63,7 +63,7 @@ export class BusinessError extends Error {
     static wrap(err: Error | BusinessError): BusinessError {
         return err instanceof BusinessError
             ? err
-            : new BusinessError(ErrorCode.E999, err.message, err.stack);
+            : new BusinessError(ErrorCode.InternalServerError, err.message, err.stack);
     }
 
     constructor(errCode: ErrorCode, logMessage: string, stack?: Error['stack']) {
@@ -73,10 +73,10 @@ export class BusinessError extends Error {
             Object.entries(ErrorCode)
                 .filter(([_, v]) => v === errCode)
                 .map(([k, _]) => k)
-                .pop() || 'E999';
+                .pop() || 'InternalServerError';
 
-        this.short_message = this.code ? errCode.message : ErrorCode.E999.message;
-        this.http_code = this.code ? errCode.http : ErrorCode.E999.http;
+        this.short_message = this.code ? errCode.message : ErrorCode.InternalServerError.message;
+        this.http_code = this.code ? errCode.http : ErrorCode.InternalServerError.http;
         this.stack = stack;
     }
 
