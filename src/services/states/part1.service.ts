@@ -25,6 +25,7 @@ export class RoundPart1StateService extends BaseStateService<RoundP1State, Round
                 this.gameRepository.updateState(
                     state.user_id,
                     state.game_id as string,
+                    this.type,
                     data,
                     RoundP1State
                 )

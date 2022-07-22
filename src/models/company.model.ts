@@ -7,6 +7,7 @@ export enum TransactionDirection {
 }
 
 export enum TransactionCode {
+    InitAmount = 'INIT_AMOUNT',
     EntryFees = 'ENTRY_FEES'
 }
 

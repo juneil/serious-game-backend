@@ -1,4 +1,5 @@
 import { Service } from '@ekonoo/lambdi';
+import { TransactionCode, TransactionDirection } from '../../models/company.model';
 import { Game, GameState, GameStateStep, GroupAnswer, GroupState } from '../../models/game.model';
 import { GameRepository } from '../../repositories/game.repository';
 import { CompanyService } from '../company.service';
@@ -34,7 +35,19 @@ export class GroupStateService extends BaseStateService<GroupState, GroupAnswer>
                                       game_id: game.id as string,
                                       user_id: game.user_id,
                                       name: answer.name,
-                                      round_details: [],
+                                      round_details: [
+                                          {
+                                              start_amount: 0,
+                                              transactions: [
+                                                  {
+                                                      amount: 1000000,
+                                                      direction: TransactionDirection.Credit,
+                                                      code: TransactionCode.InitAmount
+                                                  }
+                                              ],
+                                              end_amount: 1000000
+                                          }
+                                      ],
                                       score: 0
                                   })
                               )
