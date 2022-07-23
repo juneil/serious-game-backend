@@ -78,16 +78,12 @@ export class SeedAnswer {
     @Required tg: boolean;
     @Required uc: boolean;
     @Required tg_rate: boolean;
-    @Required commission: boolean;
-    @Required entry_fee: boolean;
+    @Required fees: boolean;
     @Required guarantee: boolean;
-    @Required guarantee_fee: boolean;
     @Required marketing: boolean;
     @Required digital: boolean;
     @Required esg: boolean;
     @Required backoffice: boolean;
-    @Required management_fee: boolean;
-    @Required sales: boolean;
     @Required sensis: SeedSensis;
 }
 
@@ -96,16 +92,12 @@ export class SeedSensisResult {
     @Required tg: number;
     @Required uc: number;
     @Required tg_rate: number;
-    @Required commission: number;
-    @Required entry_fee: number;
+    @Required fees: number;
     @Required guarantee: number;
-    @Required guarantee_fee: number;
     @Required marketing: number;
     @Required digital: number;
     @Required esg: number;
     @Required backoffice: number;
-    @Required management_fee: number;
-    @Required sales: number;
     @Required service: number;
     @Required cost: number;
     @Required performance: number;
