@@ -17,9 +17,7 @@ const Vega = require('vega-statistics');
 @Service({ providers: [GameRepository] })
 export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
     public type = GameStateStep.Seed;
-    private seedSize: 10000;
     private baseAmount = 5000;
-    private ageStd: unknown;
 
     constructor(protected gameRepository: GameRepository) {
         super();
@@ -71,7 +69,8 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
                     ...(res1 as any),
                     ...(res2 as any)
                 } as SeedSensisResult,
-                this.getRegionIndexes()
+                this.getRegionIndexes(),
+                MathJS.std([values.map(v => v.age)], 'unbiased')
             )
             .then(state =>
                 Promise.all([
@@ -104,9 +103,9 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
     }
 
     async generate(state: SeedState, round: number): Promise<any[]> {
-        const arr = new Array(this.seedSize)
+        const arr = new Array(10000)
             .fill(null)
-            .map(() => this.computeAge(state.sensis?.age || 0))
+            .map(() => this.computeAge(state.sensis?.age || 0, state.age_std))
             .map(age => this.computeAmount(age))
             .map(item => [...item, 0.01])
             .map(item => [...item, MathJS.random(0, 1)])
@@ -119,11 +118,8 @@ export class SeedStateService extends BaseStateService<SeedState, SeedAnswer> {
         return this.gameRepository.createSeed(state, round, arr);
     }
 
-    private computeAge(age: number): number {
-        if (!this.ageStd) {
-            this.ageStd = MathJS.std([age], 'unbiased');
-        }
-        const val = Vega.randomNormal([age], this.ageStd).sample();
+    private computeAge(age: number, std: number): number {
+        const val = Vega.randomNormal(age, std).sample();
         return val < 18 ? 18 : val > 90 ? 90 : Math.round(val);
     }
 

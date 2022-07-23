@@ -113,6 +113,7 @@ export class SeedState extends GameState {
     @Required @Item(SeedAnswer) answers: SeedAnswer[];
     @Simple sensis?: SeedSensisResult;
     @Simple @Item(Number) region_indexes: number[];
+    @Simple age_std: number;
 }
 
 /**

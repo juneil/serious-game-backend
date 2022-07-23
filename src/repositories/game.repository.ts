@@ -176,7 +176,8 @@ export class GameRepository {
     async completeStateSeed(
         state: SeedState,
         data: SeedSensisResult,
-        regionIndexes: number[]
+        regionIndexes: number[],
+        ageStd: number
     ): Promise<SeedState> {
         return this.dynamo
             .update({
@@ -186,10 +187,11 @@ export class GameRepository {
                     PK: `GAME#${state.user_id}`,
                     SK: `#DETAIL#${state.game_id}#STATE#${GameStateStep.Seed}`
                 },
-                UpdateExpression: `SET sensis = :data, region_indexes = :indexes`,
+                UpdateExpression: `SET sensis = :data, region_indexes = :indexes, age_std = :std`,
                 ExpressionAttributeValues: {
                     ':data': data,
-                    ':indexes': regionIndexes
+                    ':indexes': regionIndexes,
+                    ':std': ageStd
                 }
             })
             .promise()
