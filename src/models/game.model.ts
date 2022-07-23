@@ -83,6 +83,8 @@ export class SeedAnswer {
     @Required guarantee: boolean;
     @Required guarantee_fee: boolean;
     @Required marketing: boolean;
+    @Required digital: boolean;
+    @Required esg: boolean;
     @Required backoffice: boolean;
     @Required management_fee: boolean;
     @Required sales: boolean;
@@ -99,6 +101,8 @@ export class SeedSensisResult {
     @Required guarantee: number;
     @Required guarantee_fee: number;
     @Required marketing: number;
+    @Required digital: number;
+    @Required esg: number;
     @Required backoffice: number;
     @Required management_fee: number;
     @Required sales: number;
